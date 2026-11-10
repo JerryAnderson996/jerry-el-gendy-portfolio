@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jerry Anderson El Gendy — AI Engineer &amp; Data Engineer</title>
+  <meta name="description" content="Jerry Anderson El Gendy, AI Engineer @ Deda AI (Dedagroup) e Data Engineer a Milano. Specializzato in Agentic AI, Pipeline ETL Enterprise e Architetture RAG." />
+  <meta name="author" content="Jerry Anderson El Gendy" />
+  <meta name="theme-color" content="#070a12" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content="Jerry Anderson El Gendy — AI Engineer & Data Engineer" />
+  <meta property="og:description" content="AI Engineer @ Deda AI (Dedagroup) | Specializzato in Agentic AI, Pipeline ETL Enterprise e Architetture RAG." />
+  <meta property="og:locale" content="it_IT" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23070a12'/><circle cx='18' cy='20' r='6' fill='%2322d3ee'/><circle cx='46' cy='20' r='6' fill='%23a78bfa'/><circle cx='32' cy='46' r='6' fill='%2334d399'/><path d='M18 20L46 20L32 46Z' stroke='%23e2e8f0' stroke-width='2' fill='none' opacity='.5'/></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Jerry Anderson El Gendy",
+    "jobTitle": "AI Engineer & Data Engineer",
+    "worksFor": { "@type": "Organization", "name": "Deda AI (Dedagroup)" },
+    "address": { "@type": "PostalAddress", "addressLocality": "Milano", "addressCountry": "IT" },
+    "email": "mailto:elgendyjerry@gmail.com",
+    "sameAs": ["https://www.linkedin.com/in/jerry-el-gendy"],
+    "knowsAbout": ["Agentic AI", "Generative AI", "RAG", "LangChain", "CrewAI", "MCP", "LLMOps", "Azure AI Foundry", "Azure OpenAI", "Qdrant", "Data Engineering", "ETL", "Azure Data Factory", "SQL Server", "RPA"]
+  }
+  </script>
+</head>
+<body>
+  <canvas id="graph-bg" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a href="#top" class="logo" aria-label="Home">
+      <span class="logo-bracket">&lt;</span>jerry<span class="logo-dot">.</span>agent<span class="logo-bracket">/&gt;</span>
+    </a>
+    <nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Apri menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#profilo">Profilo</a></li>
+        <li><a href="#percorso">Percorso</a></li>
+        <li><a href="#progetti">Progetti</a></li>
+        <li><a href="#competenze">Competenze</a></li>
+        <li><a href="#shell">Shell</a></li>
+        <li><a href="#contatti" class="nav-cta">Contattami</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="hero-text">
+        <div class="hero-top-bar">
+          <div class="avatar-wrap">
+            <img src="assets/avatar.jpg" alt="Jerry Anderson El Gendy" class="avatar" />
+            <span class="verified-badge" title="Profilo Verificato LinkedIn">✓</span>
+          </div>
+          <div class="status-group">
+            <p class="status"><span class="pulse"></span> AI Engineer @ <strong>Deda AI</strong> (Dedagroup)</p>
+            <p class="motto mono">// ENHANCE HUMAN DECISION</p>
+          </div>
+        </div>
+
+        <h1>
+          <span class="hero-hello">Ciao, sono</span>
+          <span class="hero-name">Jerry Anderson<br /><span class="gradient">El Gendy</span></span>
+        </h1>
+        <p class="hero-role mono">
+          <span class="prompt">&gt;</span> <span id="roleTyper">AI Engineer</span><span class="caret">▍</span>
+        </p>
+        <p class="hero-lead">
+          Specializzato in <strong>Agentic AI</strong>, <strong>Pipeline ETL Enterprise</strong> e
+          <strong>Architetture RAG</strong>. Progetto agenti autonomi, workflow multi-agente e flussi dati cloud
+          che automatizzano processi bancari complessi ad alto impatto.
+        </p>
+        <div class="hero-actions">
+          <a href="#progetti" class="btn btn-primary">Esplora i progetti <span aria-hidden="true">→</span></a>
+          <a href="https://www.linkedin.com/in/jerry-el-gendy" target="_blank" rel="noopener" class="btn btn-ghost">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn <span class="badge-inline mono">2.1k+</span>
+          </a>
+        </div>
+        <ul class="hero-meta mono">
+          <li>📍 Milano, IT (Ibrido)</li>
+          <li>🏦 Banking &amp; Enterprise AI</li>
+          <li>☁️ Azure AI Foundry &amp; Data Factory</li>
+        </ul>
+      </div>
+
+      <!-- Agent trace terminal -->
+      <div class="hero-terminal" aria-label="Simulazione di un agente AI al lavoro">
+        <div class="term-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="term-title mono">agent_runtime — zsh</span>
+        </div>
+        <pre class="term-body mono" id="agentTrace"></pre>
+      </div>
+
+      <a href="#profilo" class="scroll-hint mono" aria-label="Scorri">scroll ↓</a>
+    </section>
+
+    <!-- ============ STATS ============ -->
+    <section class="stats reveal">
+      <div class="stat"><span class="stat-num" data-count="30" data-prefix="-" data-suffix="%">0</span><span class="stat-label">tempi di migrazione ed elaborazione ETL su Azure</span></div>
+      <div class="stat"><span class="stat-num" data-count="700" data-suffix="+">0</span><span class="stat-label">pagine tecniche mappate da agenti autonomi</span></div>
+      <div class="stat"><span class="stat-num" data-count="25" data-prefix="+" data-suffix="%">0</span><span class="stat-label">efficienza pipeline grazie a parallelizzazione cloud</span></div>
+      <div class="stat"><span class="stat-num" data-count="2120" data-suffix="+">0</span><span class="stat-label">follower e network attivo su LinkedIn</span></div>
+    </section>
+
+    <!-- ============ PROFILO ============ -->
+    <section id="profilo" class="section">
+      <div class="section-head reveal">
+        <span class="section-index mono">01 / profilo</span>
+        <h2>Dal dato <span class="gradient">all'agente</span>.</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            Sono un <strong>AI Engineer</strong> con un solido background nel <strong>Data Engineering</strong>.
+            In <strong>Deda AI (Dedagroup)</strong> progetto soluzioni di Generative AI e architetture agentiche
+            per l'automazione di processi bancari complessi.
+          </p>
+          <p>
+            In <strong>Dedagroup</strong> ho costruito e ottimizzato pipeline ETL scalabili su
+            <strong>Azure Data Factory</strong> per clienti di alto profilo (es. <strong>Mediobanca</strong>),
+            garantendo integrità e performance su <strong>SQL Server</strong> (riducendo fino al 30% i tempi di
+            processing e del 20% i tempi di query complesse).
+          </p>
+          <p>
+            Oggi unisco questa disciplina ingegneristica con i framework più avanzati di <strong>Agentic AI</strong>
+            (<strong>LangChain, CrewAI, MCP, Qdrant</strong>): sviluppo agenti autonomi per l'analisi di documentazione
+            tecnica oltre le 700 pagine, workflow multi-agente per l'indicizzazione semantica e soluzioni documentali
+            dinamiche multicanale (<strong>Engage One</strong> per <strong>Centrico</strong>).
+          </p>
+          <p class="about-quote mono">
+            <span class="c-muted">// Driven by continuous improvement &amp; high-impact results</span><br />
+            <span class="c-violet">const</span> stack = [<span class="c-cyan">"Python (uv)"</span>, <span class="c-cyan">"LangChain"</span>, <span class="c-cyan">"CrewAI"</span>, <span class="c-cyan">"FastAPI"</span>, <span class="c-green">"ADF &amp; SQL"</span>];
+          </p>
+        </div>
+        <div class="about-cards">
+          <article class="mini-card reveal">
+            <div class="mini-icon">🧠</div>
+            <h3>Agentic AI &amp; Multi-Agent</h3>
+            <p>Agenti autonomi e workflow multi-agente con LangChain, CrewAI, protocollo MCP, Function Calling e Pydantic.</p>
+          </article>
+          <article class="mini-card reveal">
+            <div class="mini-icon">🔎</div>
+            <h3>Advanced RAG &amp; Vector DB</h3>
+            <p>Indicizzazione semantica e retrieval multi-tenant su Qdrant e Azure AI Search, con sicurezza enterprise (APIM, Managed Identity).</p>
+          </article>
+          <article class="mini-card reveal">
+            <div class="mini-icon">🔁</div>
+            <h3>Enterprise ETL &amp; SQL</h3>
+            <p>Pipeline su Azure Data Factory e SQL Server per il settore bancario: -30% tempi di migrazione, +25% efficienza, -20% query time.</p>
+          </article>
+          <article class="mini-card reveal">
+            <div class="mini-icon">⚙️</div>
+            <h3>Intelligent &amp; Doc Automation</h3>
+            <p>Integrazione di agenti LLM con sistemi RPA per decisioni autonome e soluzioni documentali dinamiche con Engage One.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PERCORSO ============ -->
+    <section id="percorso" class="section">
+      <div class="section-head reveal">
+        <span class="section-index mono">02 / percorso</span>
+        <h2>La mia <span class="gradient">pipeline</span> professionale.</h2>
+        <p class="section-sub">Dalle fondamenta dello sviluppo software alle pipeline dati bancarie, fino alle architetture agentiche in produzione.</p>
+      </div>
+
+      <div class="pipeline">
+        <!-- Stage 1: Current AI Engineer -->
+        <article class="stage reveal">
+          <div class="stage-node active"><span>01</span></div>
+          <div class="stage-card highlight">
+            <div class="stage-top">
+              <span class="stage-tag mono">stage: reason · act · observe (Full-time · Ibrido)</span>
+              <span class="stage-date mono"><span class="pulse small"></span> Gen 2026 — Presente</span>
+            </div>
+            <h3>AI Engineer</h3>
+            <p class="stage-company">Deda AI <span>· Dedagroup · Milano</span></p>
+            <ul>
+              <li>Sviluppo di workflow di <strong>Intelligent Automation</strong> per <strong>Solution Bank</strong>, integrando <strong>agenti LLM con sistemi RPA</strong> per processi decisionali autonomi.</li>
+              <li>Realizzazione di una pipeline di analisi dei <strong>moduli CAI</strong> con <strong>Azure Content Understanding</strong> e <strong>Azure OpenAI</strong>: estrazione dati, analisi circostanze e schema del sinistro, rilevamento firme e sintesi dinamica in JSON (Python, PyMuPDF, Pillow).</li>
+              <li>Implementazione di un <strong>chatbot RAG multi-tenant su Azure</strong>: AI Search, Azure Function per aggiornamento fonti, Container Apps con agente e tool di ricerca, widget web, APIM, managed identity e controlli di accesso.</li>
+            </ul>
+            <div class="tags">
+              <span>Azure AI Foundry</span><span>Azure OpenAI</span><span>Agenti IA &amp; MCP</span><span>RAG</span><span>Qdrant</span><span>LLMOps</span><span>LLM Locali</span><span>FastAPI</span><span>Pydantic</span><span>Python (uv)</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Stage 2: Data Engineer -->
+        <article class="stage reveal">
+          <div class="stage-node"><span>02</span></div>
+          <div class="stage-card">
+            <div class="stage-top">
+              <span class="stage-tag mono">stage: extract · transform · load (Apprendistato · Ibrido)</span>
+              <span class="stage-date mono">Ott 2023 — Gen 2026 · 2a 4m</span>
+            </div>
+            <h3>Data Engineer</h3>
+            <p class="stage-company">Dedagroup <span>· Dedabit · Milano</span></p>
+            <ul>
+              <li>Progettazione e gestione di <strong>pipeline ETL su Azure Data Factory</strong> per migrare dataset complessi da sistemi legacy al cloud per <strong>Mediobanca</strong> → <strong>-30% nei tempi di elaborazione</strong>.</li>
+              <li>Ottimizzazione dei colli di bottiglia tramite logiche di parallelizzazione e migliore utilizzo delle risorse cloud → <strong>+25% di efficienza di processo</strong>.</li>
+              <li>Manutenzione database <strong>SQL Server</strong>, incident response e sviluppo di query ottimizzate per analisi e trasformazione → <strong>-20% nei tempi di esecuzione</strong> su query complesse.</li>
+              <li>Sviluppo di <strong>automazioni documentali dinamiche multicanale</strong> con scripting avanzato su <strong>Engage One</strong> per <strong>Centrico</strong>.</li>
+            </ul>
+            <div class="tags">
+              <span>Azure Data Factory</span><span>SQL Server (SSMS)</span><span>Engage One</span><span>Alteryx</span><span>Data Migration</span><span>Git / Visual Studio</span><span>Banking</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Stage 3: Junior Java Developer -->
+        <article class="stage reveal">
+          <div class="stage-node"><span>03</span></div>
+          <div class="stage-card">
+            <div class="stage-top">
+              <span class="stage-tag mono">stage: compile · build · train (Stage · Ibrido)</span>
+              <span class="stage-date mono">Mar 2023 — Ott 2023 · 8m</span>
+            </div>
+            <h3>Junior Java Developer</h3>
+            <p class="stage-company">Gruppo SCAI <span>· Consulenza Aziendale Informatica · Milano</span></p>
+            <ul>
+              <li>Conduzione di sessioni pratiche e workshop di <strong>formazione tecnica</strong> con il team su tecnologie Java enterprise: <strong>OOP, Spring Boot, operazioni CRUD, RESTful API</strong> e best practice di sviluppo.</li>
+              <li>Lavoro su database relazionali e NoSQL (Oracle SQL, PL/SQL, SQL Server, MongoDB), testing con JUnit e architetture a microservizi.</li>
+            </ul>
+            <div class="tags">
+              <span>Java</span><span>Spring Boot</span><span>RESTful API</span><span>Microservizi</span><span>Oracle PL/SQL</span><span>MongoDB</span><span>JUnit</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Stage 4: Education -->
+        <article class="stage reveal">
+          <div class="stage-node future"><span>🎓</span></div>
+          <div class="stage-card ghost">
+            <div class="stage-top">
+              <span class="stage-tag mono">stage: academic &amp; bootcamp foundation</span>
+              <span class="stage-date mono">Nov 2023 — Gen 2027 (prevista)</span>
+            </div>
+            <h3>Ingegneria Informatica (B.Sc.)</h3>
+            <p class="stage-company">Università Telematica Internazionale UNINETTUNO <span>· Roma</span></p>
+            <p class="stage-note" style="margin-bottom: 14px;">
+              Focus su Ingegneria dei Dati e AI Generativa. Esami chiave: Calcolo e Algebra Lineare, Informatica, Algoritmi, Basi di Dati.
+            </p>
+            <div class="edu-sub">
+              <div>
+                <strong>Generation Italy — Corso Junior Java Developer (500 ore)</strong>
+                <span class="mono c-muted"> · Nov 2022 – Mar 2023</span>
+                <p class="stage-note">Programmazione OOP in Java, Spring Boot, MySQL, Front-End (HTML, CSS, JS) e lavoro in team con metodologia Agile / Scrum.</p>
+              </div>
+              <div>
+                <strong>Liceo Scientifico Elio Vittorini</strong>
+                <span class="mono c-muted"> · Milano · 2010 – 2015</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ PROGETTI ============ -->
+    <section id="progetti" class="section">
+      <div class="section-head reveal">
+        <span class="section-index mono">03 / progetti &amp; hackathon</span>
+        <h2>Soluzioni <span class="gradient">AI, agentiche &amp; innovazione</span>.</h2>
+        <p class="section-sub">Sistemi enterprise sviluppati in produzione e progetti d'innovazione presentati in hackathon.</p>
+      </div>
+
+      <div class="projects projects-4">
+        <article class="project reveal" data-tilt>
+          <div class="project-glow"></div>
+          <div class="project-head">
+            <span class="project-type mono">// autonomous &amp; multi-agent</span>
+            <span class="project-badge">700+ pagine</span>
+          </div>
+          <h3>Agentic PDF Intelligence System</h3>
+          <p>
+            Agente AI autonomo e workflow multi-agente che <strong>naviga, analizza e mappa in JSON strutturato</strong>
+            documentazione tecnica complessa di oltre 700 pagine, con ragionamento, tool-use e indicizzazione semantica su <strong>Qdrant</strong>.
+          </p>
+          <div class="flow mono" aria-label="Flusso architetturale">
+            <span>PDF</span><i>→</i><span>Agents</span><i>⇄</i><span>Qdrant</span><i>→</i><span>Pydantic</span><i>→</i><span>JSON</span>
+          </div>
+          <div class="tags">
+            <span>Python (uv)</span><span>LangChain / CrewAI</span><span>Qdrant</span><span>Pydantic</span><span>Function Calling</span><span>FastAPI</span>
+          </div>
+        </article>
+
+        <article class="project reveal" data-tilt>
+          <div class="project-glow"></div>
+          <div class="project-head">
+            <span class="project-type mono">// document intelligence</span>
+            <span class="project-badge">Insurance / Banking</span>
+          </div>
+          <h3>CAI Claims Analysis Pipeline</h3>
+          <p>
+            Pipeline di analisi dei <strong>moduli CAI</strong> (constatazione amichevole): estrazione dati,
+            analisi delle circostanze e dello schema del sinistro, <strong>rilevamento delle firme</strong>
+            e sintesi dinamica dell'incidente in JSON.
+          </p>
+          <div class="flow mono" aria-label="Flusso architetturale">
+            <span>Modulo CAI</span><i>→</i><span>Content Understanding</span><i>→</i><span>Azure OpenAI</span><i>→</i><span>JSON</span>
+          </div>
+          <div class="tags">
+            <span>Azure Content Understanding</span><span>Azure OpenAI</span><span>Python</span><span>PyMuPDF</span><span>Pillow</span>
+          </div>
+        </article>
+
+        <article class="project reveal" data-tilt>
+          <div class="project-glow"></div>
+          <div class="project-head">
+            <span class="project-type mono">// enterprise RAG</span>
+            <span class="project-badge">Multi-tenant</span>
+          </div>
+          <h3>Multi-tenant RAG Chatbot on Azure</h3>
+          <p>
+            Chatbot RAG <strong>multi-tenant</strong> end-to-end: indicizzazione su AI Search con Azure Function di
+            aggiornamento fonti, agente con tool di ricerca su Container Apps, widget web e sicurezza
+            enterprise con <strong>APIM, managed identity</strong> e controlli di accesso.
+          </p>
+          <div class="flow mono" aria-label="Flusso architetturale">
+            <span>Widget</span><i>→</i><span>APIM</span><i>→</i><span>Agent</span><i>⇄</i><span>AI Search</span><i>←</i><span>Functions</span>
+          </div>
+          <div class="tags">
+            <span>Azure AI Search</span><span>Container Apps</span><span>Azure Functions</span><span>APIM</span><span>Managed Identity</span>
+          </div>
+        </article>
+
+        <article class="project reveal" data-tilt>
+          <div class="project-glow"></div>
+          <div class="project-head">
+            <span class="project-type mono">// hackathon project · A2A</span>
+            <span class="project-badge badge-violet">Re-GenerAction</span>
+          </div>
+          <h3>WhatsCity — Smart City &amp; AI App</h3>
+          <p>
+            Progetto presentato davanti alla giuria e ai vertici di <strong>A2A</strong> durante l'hackathon
+            <strong>Re-GenerAction</strong>: un'app partecipativa che connette cittadini, imprese e PA integrando
+            <strong>IoT, AI e gamification</strong> per città più sostenibili e trasparenti.
+          </p>
+          <div class="flow mono" aria-label="Flusso architetturale">
+            <span>Cittadini &amp; IoT</span><i>→</i><span>AI Engine</span><i>→</i><span>Gamification</span><i>→</i><span>PA / Smart City</span>
+          </div>
+          <div class="tags">
+            <span>AI &amp; IoT</span><span>Smart City</span><span>Gamification</span><span>Pitching</span><span>Team Multidisciplinare</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ COMPETENZE ============ -->
+    <section id="competenze" class="section">
+      <div class="section-head reveal">
+        <span class="section-index mono">04 / competenze &amp; certificazioni</span>
+        <h2>Il mio <span class="gradient">stack</span>.</h2>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skill-group reveal">
+          <h3><span class="sg-icon c-violet">◆</span> AI &amp; Agentic Engineering</h3>
+          <div class="chips">
+            <span>Agenti IA Autonomi</span>
+            <span>LangChain</span>
+            <span>CrewAI</span>
+            <span>MCP (Multi-Agent Protocol)</span>
+            <span>Advanced RAG</span>
+            <span>Azure AI Foundry &amp; Studio</span>
+            <span>Azure OpenAI</span>
+            <span>Azure Content Understanding</span>
+            <span>Qdrant · Vector DB</span>
+            <span>LLMOps &amp; System Monitoring</span>
+            <span>LLM Locali &amp; Fine-tuning</span>
+            <span>Prompt Engineering</span>
+            <span>Function Calling</span>
+            <span>Pydantic</span>
+            <span>FastAPI</span>
+          </div>
+        </div>
+        <div class="skill-group reveal">
+          <h3><span class="sg-icon c-cyan">◆</span> Data Engineering &amp; Automation</h3>
+          <div class="chips">
+            <span>Azure Data Factory</span>
+            <span>SQL Server (SSMS)</span>
+            <span>Oracle SQL &amp; PL/SQL</span>
+            <span>MySQL &amp; MongoDB</span>
+            <span>Query Optimization</span>
+            <span>Data Migration &amp; ETL</span>
+            <span>Alteryx</span>
+            <span>Informatica CDI</span>
+            <span>RPA · Power Automate</span>
+            <span>Engage One</span>
+            <span>Business Intelligence &amp; KPI</span>
+          </div>
+        </div>
+        <div class="skill-group reveal">
+          <h3><span class="sg-icon c-green">◆</span> Software, Cloud &amp; DevOps</h3>
+          <div class="chips">
+            <span>Python (uv)</span>
+            <span>Java &amp; Spring Boot</span>
+            <span>Microservizi &amp; REST API</span>
+            <span>Docker</span>
+            <span>Azure Container Apps</span>
+            <span>Azure Functions &amp; APIM</span>
+            <span>Managed Identity</span>
+            <span>Git Workflow</span>
+            <span>Agile / Scrum</span>
+            <span>OWASP Top 10 Security</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="extra-grid">
+        <div class="extra-card reveal">
+          <h3 class="mono"><span class="c-muted">#</span> licenze &amp; certificazioni</h3>
+          <ul class="cert-list">
+            <li>
+              <span class="cert-badge">DL.AI</span>
+              <div>
+                <strong>AI Python for Beginners — DeepLearning.AI</strong>
+                <span class="mono">05 / 2026 · <a href="https://learn.deeplearning.ai/certificates/10fc7d25-5842-454e-a12e-247aada513f7" target="_blank" rel="noopener" class="cert-link">Verifica credenziale ↗</a></span>
+              </div>
+            </li>
+            <li>
+              <span class="cert-badge alt">GEN</span>
+              <div>
+                <strong>AI per Sviluppo Software — Generation</strong>
+                <span class="mono">04 / 2026 · <a href="https://www.credly.com/badges/3488f82f-ce79-4096-91d4-424057b50aab" target="_blank" rel="noopener" class="cert-link">Credly Badge ↗</a></span>
+              </div>
+            </li>
+            <li>
+              <span class="cert-badge alt">ALX</span>
+              <div>
+                <strong>Alteryx Designer Core — Alteryx</strong>
+                <span class="mono">08 / 2025 – 08 / 2027 · <a href="https://www.credly.com/badges/df629bfb-96ea-44fd-ab70-4954a46b154f/linked_in" target="_blank" rel="noopener" class="cert-link">Credly Badge ↗</a></span>
+              </div>
+            </li>
+            <li>
+              <span class="cert-badge">CDI</span>
+              <div>
+                <strong>CDI Implementation Practitioner — Informatica</strong>
+                <span class="mono">03 / 2025 · Certificato verificato</span>
+              </div>
+            </li>
+            <li>
+              <span class="cert-badge green">MS</span>
+              <div>
+                <strong>Sviluppo sicuro .NET con OWASP Top 10 — Microsoft Learn</strong>
+                <span class="mono">2026 · Badge conseguito</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="extra-card reveal">
+          <h3 class="mono"><span class="c-muted">#</span> lingue</h3>
+          <ul class="lang-list">
+            <li><span>Italiano</span><div class="bar"><i style="--w:100%"></i></div><em class="mono">madrelingua</em></li>
+            <li><span>Inglese</span><div class="bar"><i style="--w:85%"></i></div><em class="mono">professionale</em></li>
+            <li><span>Spagnolo</span><div class="bar"><i style="--w:65%"></i></div><em class="mono">buono</em></li>
+          </ul>
+
+          <h3 class="mono" style="margin-top: 28px;"><span class="c-muted">#</span> AI dev workflow</h3>
+          <p class="c-muted" style="font-size: 0.88rem; margin-bottom: 12px;">Strumenti integrati nel mio flusso quotidiano di sviluppo e prototipazione:</p>
+          <div class="chips">
+            <span>GitHub Copilot</span>
+            <span>Cursor / Agentic IDEs</span>
+            <span>Replit Agent</span>
+            <span>Wispr Flow</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SHELL ============ -->
+    <section id="shell" class="section">
+      <div class="section-head reveal">
+        <span class="section-index mono">05 / shell</span>
+        <h2>Interroga il mio <span class="gradient">agente</span>.</h2>
+        <p class="section-sub">Un terminale interattivo alimentato dai dati del mio CV e profilo LinkedIn. Digita <code>help</code> per iniziare.</p>
+      </div>
+      <div class="shell reveal" id="shellBox">
+        <div class="term-head">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="term-title mono">guest@jerry-agent:~</span>
+        </div>
+        <div class="shell-body mono" id="shellOut" aria-live="polite"></div>
+        <form class="shell-input mono" id="shellForm" autocomplete="off">
+          <label for="shellIn"><span class="c-green">guest@jerry</span><span class="c-muted">:</span><span class="c-cyan">~</span><span class="c-muted">$</span></label>
+          <input id="shellIn" type="text" spellcheck="false" aria-label="Comando" />
+        </form>
+        <div class="shell-suggest mono" id="shellSuggest">
+          <button data-cmd="whoami">whoami</button>
+          <button data-cmd="impact">impact</button>
+          <button data-cmd="skills">skills</button>
+          <button data-cmd="projects">projects</button>
+          <button data-cmd="experience">experience</button>
+          <button data-cmd="certs">certs</button>
+          <button data-cmd="contact">contact</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTATTI ============ -->
+    <section id="contatti" class="section contact">
+      <div class="contact-card reveal">
+        <span class="section-index mono">06 / contatti</span>
+        <h2>Costruiamo il prossimo <span class="gradient">agente</span> insieme.</h2>
+        <p>
+          Che si tratti di progettare un'architettura agentica, portare un sistema RAG in produzione su Azure
+          o scalare una pipeline dati bancaria, scrivimi: rispondo volentieri.
+        </p>
+        <div class="contact-links">
+          <a href="mailto:elgendyjerry@gmail.com" class="contact-item">
+            <span class="ci-label mono">email</span>
+            <span class="ci-value">elgendyjerry@gmail.com</span>
+          </a>
+          <a href="tel:+393911883405" class="contact-item">
+            <span class="ci-label mono">telefono</span>
+            <span class="ci-value">+39 391 188 3405</span>
+          </a>
+          <a href="https://www.linkedin.com/in/jerry-el-gendy" target="_blank" rel="noopener" class="contact-item">
+            <span class="ci-label mono">linkedin (2.121 follower · 500+ conn.)</span>
+            <span class="ci-value">in/jerry-el-gendy</span>
+          </a>
+        </div>
+        <div class="hero-actions center">
+          <a href="mailto:elgendyjerry@gmail.com?subject=Ciao%20Jerry%20-%20Collaborazione" class="btn btn-primary">Inviami un'email <span aria-hidden="true">→</span></a>
+          <button class="btn btn-ghost" id="copyEmail" type="button">Copia email</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer mono">
+    <span>© <span id="year"></span> Jerry Anderson El Gendy · Milano</span>
+    <span class="c-muted">ENHANCE HUMAN DECISION · built with HTML, CSS &amp; JS</span>
+  </footer>
+
+  <div class="toast mono" id="toast" role="status"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
