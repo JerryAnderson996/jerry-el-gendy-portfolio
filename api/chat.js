@@ -132,56 +132,33 @@ module.exports = async function handler(req, res) {
       parts: [{ text: `[UI Language preference if ambiguous: ${lang}]\nUser question: ${cleanMsg}` }],
     });
 
-    // Dynamically discover available flash/pro models or use current stable aliases
-    let models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest", "gemini-2.0-flash"];
-    try {
-      const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
-      if (listResp.ok) {
-        const listData = await listResp.json();
-        const available = (listData.models || [])
-          .filter((m) => (m.supportedGenerationMethods || []).includes("generateContent"))
-          .map((m) => m.name.replace(/^models\//, ""))
-          .filter((n) => n.includes("gemini") && (n.includes("flash") || n.includes("pro")) && !n.includes("tts") && !n.includes("image") && !n.includes("embedding"));
-        if (available.length) {
-          models = available;
-        }
-      }
-    } catch {}
+    const model = "gemini-2.5-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents,
+        generationConfig: {
+          temperature: 0.35,
+          maxOutputTokens: 320,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
+      }),
+    });
 
-    let replyText = null;
-    let usedModel = models[0];
-    const errors = [];
-
-    for (const model of models.slice(0, 4)) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents,
-          generationConfig: {
-            temperature: 0.35,
-            maxOutputTokens: 450,
-          },
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const candidate = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidate) {
-          replyText = candidate;
-          usedModel = model;
-          break;
-        }
-      } else {
-        errors.push(`${model}: ${response.status} ${(await response.text()).slice(0, 180)}`);
-      }
+    if (!response.ok) {
+      const errText = (await response.text()).slice(0, 300);
+      return res.status(502).json({ error: "Upstream LLM error", detail: `${model}: ${response.status} ${errText}`, fallback: true });
     }
 
+    const data = await response.json();
+    const replyText = data?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("").trim();
+    const usedModel = model;
+
     if (!replyText) {
-      return res.status(502).json({ error: "Upstream LLM error", detail: errors, fallback: true });
+      return res.status(502).json({ error: "Empty candidate", fallback: true });
     }
 
     return res.status(200).json({
