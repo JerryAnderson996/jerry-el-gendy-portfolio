@@ -406,7 +406,200 @@ Digita <span class="c-cyan">help</span> per vedere i comandi, oppure clicca un s
   $$("#shellSuggest button").forEach((b) => b.addEventListener("click", () => { run(b.dataset.cmd); input.focus({ preventScroll: true }); }));
 
   /* ---------------------------------------------------------
-     8. Misc: copy email, toast, year
+     8. Floating AI Chatbot Widget
+     --------------------------------------------------------- */
+  const chatWidget = $("#chatWidget");
+  const chatFab = $("#chatFab");
+  const chatPanel = $("#chatPanel");
+  const chatClose = $("#chatClose");
+  const chatReset = $("#chatReset");
+  const chatMessages = $("#chatMessages");
+  const chatForm = $("#chatForm");
+  const chatInput = $("#chatInput");
+  const chatQuick = $("#chatQuick");
+
+  const kb = [
+    {
+      keys: ["ciao", "salve", "buongiorno", "buonasera", "hey", "hello", "hi", "chi sei", "presentati"],
+      trace: "agent.greet() · profile_context loaded",
+      reply: `Ciao! 👋 Sono l'<strong>AI Agent di Jerry Anderson El Gendy</strong>.<br><br>
+Jerry è un <strong>AI Engineer @ Deda AI (Dedagroup)</strong> e <strong>Data Engineer</strong> a Milano, specializzato in <strong>Agentic AI, Pipeline ETL Enterprise e Architetture RAG</strong>.<br><br>
+Chiedimi pure dei suoi <a href="#progetti">progetti AI</a>, dell'esperienza in <a href="#percorso">Deda AI e Dedagroup</a>, delle <a href="#competenze">competenze tecniche</a> o di come <a href="#contatti">contattarlo</a>!`
+    },
+    {
+      keys: ["deda", "lavoro", "ruolo", "attuale", "oggi", "occupi", "esperienza", "carriera", "percorso", "aziend", "solution bank"],
+      trace: "rag.retrieve(collection='experience', top_k=3)",
+      reply: `Ecco il percorso professionale di Jerry:
+<ul>
+  <li><strong>AI Engineer @ Deda AI (Dedagroup)</strong> <em>(Gen 2026 – Presente · Full-time)</em>: sviluppa flussi di Intelligent Automation per <strong>Solution Bank</strong> (agenti LLM + RPA), pipeline di Document Intelligence per moduli CAI e chatbot RAG multi-tenant su Azure.</li>
+  <li><strong>Data Engineer @ Dedagroup</strong> <em>(Ott 2023 – Gen 2026 · 2a 4m)</em>: pipeline ETL su Azure Data Factory per <strong>Mediobanca</strong> (<strong>-30%</strong> tempi di migrazione, <strong>+25%</strong> efficienza), ottimizzazione query SQL Server (<strong>-20%</strong> tempi) e automazioni Engage One per <strong>Centrico</strong>.</li>
+  <li><strong>Junior Java Developer @ Gruppo SCAI</strong> <em>(Mar – Ott 2023)</em>: formazione tecnica e sviluppo Java, OOP, Spring Boot, REST API e SQL.</li>
+</ul>`
+    },
+    {
+      keys: ["progett", "rag", "pdf", "cai", "sinistr", "chatbot", "agent", "qdrant", "whatscity", "a2a", "hackathon"],
+      trace: "rag.retrieve(collection='projects_and_agents', top_k=4)",
+      reply: `Jerry ha realizzato soluzioni AI &amp; agentiche enterprise e progetti d'innovazione:
+<ul>
+  <li><strong>Agentic PDF Intelligence System</strong>: agenti autonomi e multi-agente (LangChain, CrewAI, Qdrant, Pydantic, FastAPI) che navigano e mappano in JSON documenti tecnici da <strong>700+ pagine</strong>.</li>
+  <li><strong>CAI Claims Analysis Pipeline</strong>: analisi moduli di constatazione amichevole con <strong>Azure Content Understanding</strong> e <strong>Azure OpenAI</strong> (dati, circostanze, schema sinistro, firme e sintesi JSON).</li>
+  <li><strong>Multi-tenant RAG Chatbot on Azure</strong>: architettura completa con Azure AI Search, Azure Functions, Container Apps, widget web, APIM e Managed Identity.</li>
+  <li><strong>WhatsCity (Hackathon A2A Re-GenerAction)</strong>: app Smart City con AI, IoT e gamification presentata ai vertici A2A.</li>
+</ul>`
+    },
+    {
+      keys: ["risultat", "metric", "impatto", "etl", "mediobanca", "data engineer", "sql", "data factory", "adf", "percentual", "numeri", "performance"],
+      trace: "sql_metrics.query(target='dedagroup_etl_kpi')",
+      reply: `Come Data Engineer in Dedagroup (su flussi bancari <strong>Mediobanca</strong> e <strong>Centrico</strong>), Jerry ha ottenuto risultati misurabili:
+<ul>
+  <li>📉 <strong>-30% nei tempi di elaborazione e migrazione</strong> da sistemi legacy al cloud su Azure Data Factory.</li>
+  <li>⚡ <strong>+25% di efficienza di processo</strong> eliminando i colli di bottiglia tramite logiche di parallelizzazione cloud.</li>
+  <li>🔍 <strong>-20% nei tempi di esecuzione</strong> di query complesse su SQL Server.</li>
+  <li>📄 Automazione documentale dinamica multicanale con <strong>Engage One</strong>.</li>
+</ul>`
+    },
+    {
+      keys: ["skill", "competenz", "stack", "tecnologi", "linguagg", "framework", "strument", "python", "azure", "langchain", "crewai", "mcp", "java"],
+      trace: "agent.inspect_skills(total=78)",
+      reply: `Lo stack tecnologico di Jerry unisce <strong>AI Engineering</strong> e <strong>Data Engineering</strong>:
+<ul>
+  <li><strong>AI &amp; Agentic:</strong> Agenti Autonomi, LangChain, CrewAI, protocollo MCP, Advanced RAG, Azure AI Foundry &amp; Studio, Azure OpenAI, Qdrant (Vector DB), LLMOps, LLM Locali, Fine-tuning, Pydantic, FastAPI.</li>
+  <li><strong>Data &amp; Automation:</strong> Azure Data Factory, SQL Server (SSMS), Oracle PL/SQL, MongoDB, Alteryx, Informatica CDI, RPA (Power Automate), Engage One.</li>
+  <li><strong>Software &amp; Cloud:</strong> Python (ecosistema <code>uv</code>), Java &amp; Spring Boot, Docker, Azure Container Apps, Azure Functions, APIM, Git, Agile/Scrum.</li>
+</ul>`
+    },
+    {
+      keys: ["certificazion", "attestat", "credly", "alteryx", "informatica", "deeplearning", "owasp"],
+      trace: "rag.retrieve(collection='certifications')",
+      reply: `Jerry possiede <strong>5 certificazioni e badge</strong> verificati:
+<ul>
+  <li>🏅 <strong>AI Python for Beginners</strong> — DeepLearning.AI (05/2026)</li>
+  <li>🏅 <strong>AI per Sviluppo Software</strong> — Generation / Credly (04/2026)</li>
+  <li>🏅 <strong>Sviluppo sicuro .NET con OWASP Top 10</strong> — Microsoft Learn (2026)</li>
+  <li>🏅 <strong>Alteryx Designer Core</strong> — Alteryx (08/2025 – 08/2027)</li>
+  <li>🏅 <strong>CDI Implementation Practitioner</strong> — Informatica (03/2025)</li>
+</ul>`
+    },
+    {
+      keys: ["studi", "universit", "laurea", "uninettuno", "istruzione", "formazione", "generation", "scuola", "liceo", "lingue", "inglese", "spagnolo"],
+      trace: "rag.retrieve(collection='education_and_languages')",
+      reply: `<strong>Formazione &amp; Lingue:</strong>
+<ul>
+  <li>🎓 <strong>B.Sc. Ingegneria Informatica</strong> — Università UNINETTUNO Roma (2023 – 2027, focus Data Engineering &amp; GenAI).</li>
+  <li>💻 <strong>Bootcamp Junior Java Developer (500 ore)</strong> — Generation Italy (2022 – 2023).</li>
+  <li>🌍 <strong>Lingue:</strong> Italiano (madrelingua), Inglese (professionale), Spagnolo (buono).</li>
+</ul>`
+    },
+    {
+      keys: ["contatt", "email", "mail", "telefono", "numero", "cellulare", "linkedin", "assumer", "hire", "colloquio", "collabora", "scriver", "dove"],
+      trace: "tool.get_contact_card()",
+      reply: `Puoi contattare Jerry direttamente qui (è a <strong>Milano</strong>, operativo in modalità ibrida/remota):
+<ul>
+  <li>📧 <strong>Email:</strong> <a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a></li>
+  <li>📱 <strong>Telefono:</strong> <a href="tel:+393911883405">+39 391 188 3405</a></li>
+  <li>💼 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/jerry-el-gendy" target="_blank" rel="noopener">linkedin.com/in/jerry-el-gendy</a> (2.121 follower · 500+ collegamenti)</li>
+</ul>`
+    }
+  ];
+
+  function addBotMessage(html, traceText = "agent.respond()") {
+    const wrap = document.createElement("div");
+    wrap.className = "chat-msg bot";
+    wrap.innerHTML = `<span class="chat-trace">⚡ ${escapeHTML(traceText)}</span><div class="chat-bubble">${html}</div>`;
+    chatMessages.appendChild(wrap);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function addUserMessage(text) {
+    const wrap = document.createElement("div");
+    wrap.className = "chat-msg user";
+    wrap.innerHTML = `<div class="chat-bubble">${escapeHTML(text)}</div>`;
+    chatMessages.appendChild(wrap);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function findAnswer(query) {
+    const q = query.toLowerCase();
+    let best = null, bestScore = 0;
+    for (const item of kb) {
+      let score = 0;
+      for (const k of item.keys) {
+        if (q.includes(k)) score += k.length;
+      }
+      if (score > bestScore) { bestScore = score; best = item; }
+    }
+    if (best) return best;
+    return {
+      trace: "agent.fallback_router()",
+      reply: `Posso raccontarti tutto su Jerry! Prova a chiedermi:
+<ul>
+  <li>Quali <strong>progetti Agentic AI &amp; RAG</strong> ha sviluppato</li>
+  <li>Cosa fa come <strong>AI Engineer in Deda AI</strong> o i risultati ottenuti in <strong>Dedagroup</strong> (-30% tempi ETL)</li>
+  <li>Il suo <strong>stack tecnologico</strong> (Python, LangChain, CrewAI, MCP, Azure, SQL) e le <strong>certificazioni</strong></li>
+  <li>I suoi <strong>contatti</strong> (<a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a> · <a href="tel:+393911883405">+39 391 188 3405</a>)</li>
+</ul>`
+    };
+  }
+
+  let busy = false;
+  async function handleQuestion(text) {
+    const clean = text.trim();
+    if (!clean || busy) return;
+    busy = true;
+    addUserMessage(clean);
+
+    const typing = document.createElement("div");
+    typing.className = "chat-msg bot";
+    typing.innerHTML = `<div class="chat-typing"><i></i><i></i><i></i></div>`;
+    chatMessages.appendChild(typing);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    await sleep(prefersReduced ? 80 : 520);
+    typing.remove();
+
+    const ans = findAnswer(clean);
+    addBotMessage(ans.reply, ans.trace);
+    busy = false;
+  }
+
+  function initChat() {
+    chatMessages.innerHTML = "";
+    addBotMessage(
+      `Ciao! 👋 Sono l'<strong>assistente AI di Jerry</strong>.<br>Chiedimi pure qualsiasi cosa sulle sue esperienze in <strong>Deda AI &amp; Dedagroup</strong>, sui progetti <strong>Agentic AI / RAG</strong>, sullo stack tecnico o su come contattarlo.`,
+      "agent.init(model='jerry-rag-v2')"
+    );
+  }
+
+  function toggleChat(force) {
+    const open = typeof force === "boolean" ? force : !chatWidget.classList.contains("open");
+    chatWidget.classList.toggle("open", open);
+    chatFab.setAttribute("aria-expanded", open);
+    chatPanel.setAttribute("aria-hidden", !open);
+    if (open) setTimeout(() => chatInput.focus({ preventScroll: true }), 150);
+  }
+
+  initChat();
+  chatFab.addEventListener("click", () => toggleChat());
+  chatClose.addEventListener("click", () => toggleChat(false));
+  chatReset.addEventListener("click", () => initChat());
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const val = chatInput.value;
+    chatInput.value = "";
+    handleQuestion(val);
+  });
+  $$("button", chatQuick).forEach((b) => {
+    b.addEventListener("click", () => handleQuestion(b.dataset.q));
+  });
+  $$(".chat-messages").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      const a = e.target.closest("a[href^='#']");
+      if (a && innerWidth < 600) toggleChat(false);
+    });
+  });
+
+  /* ---------------------------------------------------------
+     9. Misc: copy email, toast, year
      --------------------------------------------------------- */
   const toast = $("#toast");
   function showToast(msg) {
