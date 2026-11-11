@@ -177,14 +177,8 @@ export default async function handler(req) {
       parts: [{ text: cleanMsg }],
     });
 
-    const validModels = [
-      "gemini-3.5-flash-lite",
-      "gemini-3.5-flash",
-      "gemini-3.8-flash",
-      "gemini-3.1-flash-lite",
-    ];
-    const primary = validModels.includes(preferredModel) ? preferredModel : "gemini-3.5-flash-lite";
-    const models = [primary, ...validModels].filter((v, i, a) => a.indexOf(v) === i);
+    // Fixed cost-efficient model chain: cheapest/fastest first, bigger model only as last resort
+    const models = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
 
     // Hedged parallel requests: launch the primary model immediately, then a backup model
     // after 2.5s if no answer yet. First valid answer wins, all others are aborted.
@@ -247,8 +241,8 @@ export default async function handler(req) {
       const winner = await Promise.race([
         Promise.any([
           callModel(models[0], 0),
-          callModel(models[1], 2500),
-          callModel(models[2], 6000),
+          callModel(models[1], 4000),
+          callModel(models[2], 9000),
         ]),
         deadline,
       ]);
