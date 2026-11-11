@@ -107,7 +107,11 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { message = "", history = [], lang = "en" } = req.body || {};
+    let body = req.body;
+    if (typeof body === "string") {
+      try { body = JSON.parse(body); } catch { body = {}; }
+    }
+    const { message = "", history = [], lang = "en" } = body || {};
     const cleanMsg = String(message).trim().slice(0, 1200);
     if (!cleanMsg) {
       return res.status(400).json({ error: "Empty message" });
@@ -131,12 +135,16 @@ module.exports = async function handler(req, res) {
     const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
     let replyText = null;
     let usedModel = models[0];
+    let lastErr = null;
 
     for (const model of models) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
       const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
         body: JSON.stringify({
           system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents,
@@ -155,11 +163,13 @@ module.exports = async function handler(req, res) {
           usedModel = model;
           break;
         }
+      } else {
+        lastErr = `${model}: ${response.status} ${await response.text()}`;
       }
     }
 
     if (!replyText) {
-      return res.status(502).json({ error: "Upstream LLM error", fallback: true });
+      return res.status(502).json({ error: "Upstream LLM error", detail: lastErr, fallback: true });
     }
 
     return res.status(200).json({
@@ -168,6 +178,6 @@ module.exports = async function handler(req, res) {
       model: usedModel,
     });
   } catch (err) {
-    return res.status(500).json({ error: "Internal error", fallback: true });
+    return res.status(500).json({ error: String(err?.message || err), fallback: true });
   }
 };
