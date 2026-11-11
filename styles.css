@@ -83,14 +83,32 @@ code { font-family: var(--mono); background: rgba(34, 211, 238, 0.12); color: va
 .logo-bracket { color: var(--muted); }
 .logo-dot { color: var(--cyan); }
 
-.nav-links { display: flex; gap: 6px; list-style: none; align-items: center; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-links { display: flex; gap: 4px; list-style: none; align-items: center; }
 .nav-links a {
-  font-size: 0.92rem; color: var(--muted); padding: 8px 14px; border-radius: 999px;
+  font-size: 0.9rem; color: var(--muted); padding: 8px 13px; border-radius: 999px;
   transition: color 0.2s, background 0.2s;
 }
 .nav-links a:hover, .nav-links a.active { color: var(--text); background: rgba(255, 255, 255, 0.06); }
 .nav-links a.nav-cta { color: var(--bg); background: var(--text); font-weight: 600; }
 .nav-links a.nav-cta:hover { background: var(--cyan); }
+
+/* Language Switcher */
+.lang-switcher {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border);
+}
+.lang-btn {
+  background: transparent; border: 0; color: var(--muted);
+  font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+  padding: 5px 8px; border-radius: 999px; cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.lang-btn:hover { color: var(--text); }
+.lang-btn.active {
+  background: var(--grad); color: #080b14;
+}
 
 .nav-toggle { display: none; background: none; border: 0; cursor: pointer; width: 36px; height: 36px; position: relative; }
 .nav-toggle span { position: absolute; left: 8px; right: 8px; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.3s, top 0.3s; }
