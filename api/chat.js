@@ -80,7 +80,7 @@ const ON_TOPIC_PATTERNS = [
   // Projects & Technical Domains & Stack
   /\b(project|progett|projekt|projet|proyecto|agent|agentic|multi-?agent|rag|llm|llmops|openai|gemini|gpt|azure|foundry|search|qdrant|vector|pydantic|fastapi|python|\buv\b|langchain|crewai|mcp|pdf|cai|sinistr|claim|insurance|chatbot|bot|etl|pipeline|sql|ssms|oracle|pl\/?sql|mysql|mongodb|database|data\s*factory|adf|alteryx|informatica|cdi|rpa|power\s*automate|engage\s*one|java|spring|docker|microservice|api|apim|rest|git|scrum|agile|owasp|security|copilot|replit|wispr)\b/i,
   // Metrics, Skills, Education, Certs, Languages, Contacts
-  /\b(skill|competenz|stack|tech|tool|strument|certific|badge|credly|deeplearning|study|studi|educat|formazion|ausbildung|degree|laurea|bachelor|universit|school|corso|bootcamp|lang|lingu|sprache|idiom|english|italian|spanish|german|french|inglese|italiano|spagnolo|tedesco|francese|contact|contatt|kontakt|contacto|email|mail|phone|telefon|number|numero|linkedin|link|website|sito|portfolio|metric|result|risultat|impact|impatto|kpi|percent|%)\b/i,
+  /\b(skill|competenz|stack|tech|tool|strument|certific|badge|credly|deeplearning|study|studi|educat|formazion|ausbildung|degree|laurea|bachelor|universit|school|corso|bootcamp|lang|lingu|sprache|idiom|english|italian|spanish|german|french|inglese|italiano|spagnolo|tedesco|francese|contact|contatt|kontakt|contacto|email|mail|phone|telefon|number|numero|linkedin|github|repo|repository|code|codice|link|website|sito|portfolio|metric|result|risultat|impact|impatto|kpi|percent|%)\b/i,
 ];
 
 function isRelevantToJerry(text) {
@@ -117,6 +117,7 @@ const SYSTEM_PROMPT = `You are "Jerry's AI Agent (RAG v2.0)", the official AI as
   - Email: elgendyjerry@gmail.com
   - Phone: +39 391 188 3405
   - LinkedIn: https://www.linkedin.com/in/jerry-el-gendy
+  - GitHub: https://github.com/JerryAnderson996
   - Portfolio: https://jerry-el-gendy.vercel.app
 
 #### PROFESSIONAL EXPERIENCE

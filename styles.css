@@ -402,7 +402,7 @@ code { font-family: var(--mono); background: rgba(34, 211, 238, 0.12); color: va
   -webkit-mask-composite: xor; mask-composite: exclude;
 }
 .contact-card p { color: #b8c2d8; max-width: 620px; margin: 20px auto 40px; font-size: 1.08rem; }
-.contact-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 860px; margin: 0 auto; }
+.contact-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 860px; margin: 0 auto; }
 .contact-item {
   display: flex; flex-direction: column; gap: 4px; padding: 20px; border-radius: 14px;
   background: rgba(7, 10, 18, 0.55); border: 1px solid var(--border); transition: border-color 0.25s, transform 0.25s;

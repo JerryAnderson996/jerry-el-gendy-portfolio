@@ -726,6 +726,7 @@
   let hIndex = -1;
 
   const L = "https://www.linkedin.com/in/jerry-el-gendy";
+  const G = "https://github.com/JerryAnderson996";
   const commands = {
     help: () => `<span class="c-violet">Available commands:</span>
   <span class="c-cyan">whoami</span>       about Jerry Anderson El Gendy
@@ -736,7 +737,8 @@
   <span class="c-cyan">education</span>    academic &amp; bootcamp background
   <span class="c-cyan">certs</span>        licenses &amp; certifications
   <span class="c-cyan">languages</span>    spoken languages
-  <span class="c-cyan">contact</span>      email, phone &amp; LinkedIn
+  <span class="c-cyan">contact</span>      email, phone, LinkedIn &amp; GitHub
+  <span class="c-cyan">github</span>       open GitHub profile
   <span class="c-cyan">clear</span>        clear terminal
 <span class="c-muted">Tip: use ↑ ↓ for command history and Tab for autocompletion.</span>`,
 
@@ -800,9 +802,11 @@ and enterprise ETL pipelines (Azure Data Factory, SQL Server) for complex bankin
 
     contact: () => `email     <a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a>
 phone     <a href="tel:+393911883405">+39 391 188 3405</a>
-linkedin  <a href="${L}" target="_blank" rel="noopener">in/jerry-el-gendy</a>`,
+linkedin  <a href="${L}" target="_blank" rel="noopener">in/jerry-el-gendy</a>
+github    <a href="${G}" target="_blank" rel="noopener">github.com/JerryAnderson996</a>`,
 
     linkedin: () => { window.open(L, "_blank", "noopener"); return `Opening <a href="${L}" target="_blank" rel="noopener">LinkedIn</a>…`; },
+    github: () => { window.open(G, "_blank", "noopener"); return `Opening <a href="${G}" target="_blank" rel="noopener">GitHub</a>…`; },
     email: () => { location.href = "mailto:elgendyjerry@gmail.com"; return "Opening email client…"; },
     ls: () => `<span class="c-cyan">experience/</span>  <span class="c-cyan">projects/</span>  <span class="c-cyan">skills/</span>  cv.md  contact.txt`,
     date: () => new Date().toLocaleString(),
@@ -935,12 +939,13 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
       </ul>`
     },
     {
-      keys: ["contact", "contatt", "kontakt", "contacto", "email", "mail", "phone", "telefono", "linkedin", "hire", "assum"],
+      keys: ["contact", "contatt", "kontakt", "contacto", "email", "mail", "phone", "telefono", "linkedin", "github", "repo", "code", "hire", "assum"],
       trace: "tool.get_contact_card()",
       reply: `<ul>
         <li>📧 <strong>Email:</strong> <a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a></li>
         <li>📱 <strong>Phone:</strong> <a href="tel:+393911883405">+39 391 188 3405</a></li>
         <li>💼 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/jerry-el-gendy" target="_blank" rel="noopener">linkedin.com/in/jerry-el-gendy</a> (2,121 followers · 500+ connections)</li>
+        <li>💻 <strong>GitHub:</strong> <a href="https://github.com/JerryAnderson996" target="_blank" rel="noopener">github.com/JerryAnderson996</a></li>
       </ul>`
     }
   ];
