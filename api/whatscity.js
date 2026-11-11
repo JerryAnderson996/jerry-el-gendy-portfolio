@@ -186,65 +186,80 @@ export default async function handler(req) {
     const primary = validModels.includes(preferredModel) ? preferredModel : "gemini-3.5-flash-lite";
     const models = [primary, ...validModels].filter((v, i, a) => a.indexOf(v) === i);
 
-    let replyText = null;
-    let usedModel = models[0];
+    // Hedged parallel requests: launch the primary model immediately, then a backup model
+    // after 2.5s if no answer yet. First valid answer wins, all others are aborted.
+    // Global deadline of 20s keeps us well below the Vercel Edge 25s limit
+    // (exceeding it returns a response WITHOUT CORS headers -> "Failed to fetch" in the browser).
+    const payload = {
+      contents,
+      generationConfig: jsonMode
+        ? { responseMimeType: "application/json", temperature: 0.2, maxOutputTokens: 1024 }
+        : { temperature: 0.45, maxOutputTokens: 2048 },
+    };
+    if (systemContext && !jsonMode) {
+      payload.systemInstruction = {
+        parts: [{ text: String(systemContext).slice(0, 6000) }],
+      };
+    }
+    const payloadStr = JSON.stringify(payload);
+
+    const controllers = [];
     let lastError = null;
 
-    for (const model of models) {
+    const callModel = async (model, delayMs) => {
+      if (delayMs) await new Promise((r) => setTimeout(r, delayMs));
+      const controller = new AbortController();
+      controllers.push(controller);
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(
         apiKey
       )}`;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 9000);
-
-      try {
-        const payload = {
-          contents,
-          generationConfig: jsonMode
-            ? { responseMimeType: "application/json", temperature: 0.2, maxOutputTokens: 600 }
-            : { temperature: 0.45, maxOutputTokens: 1000 },
-        };
-
-        if (systemContext && !jsonMode) {
-          payload.systemInstruction = {
-            parts: [{ text: String(systemContext).slice(0, 4000) }],
-          };
-        }
-
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
-          body: JSON.stringify(payload),
-        });
-        clearTimeout(timer);
-
-        if (response.ok) {
-          const data = await response.json();
-          const parts = data?.candidates?.[0]?.content?.parts || [];
-          const text =
-            parts
-              .filter((p) => !p.thought)
-              .map((p) => p.text || "")
-              .join("")
-              .trim() ||
-            parts
-              .map((p) => p.text || "")
-              .join("")
-              .trim();
-
-          if (text) {
-            replyText = text;
-            usedModel = model;
-            break;
-          }
-        } else {
-          lastError = `HTTP ${response.status}`;
-        }
-      } catch (e) {
-        clearTimeout(timer);
-        lastError = e.message || "Timeout";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: payloadStr,
+      });
+      if (!response.ok) {
+        lastError = `Gemini ${model} HTTP ${response.status}`;
+        throw new Error(lastError);
       }
+      const data = await response.json();
+      const parts = data?.candidates?.[0]?.content?.parts || [];
+      const text = parts
+        .filter((p) => !p.thought)
+        .map((p) => p.text || "")
+        .join("")
+        .trim();
+      if (!text) {
+        lastError = `Gemini ${model}: risposta vuota`;
+        throw new Error(lastError);
+      }
+      return { text, model };
+    };
+
+    const deadline = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout 20s")), 20000)
+    );
+
+    let replyText = null;
+    let usedModel = models[0];
+    try {
+      const winner = await Promise.race([
+        Promise.any([
+          callModel(models[0], 0),
+          callModel(models[1], 2500),
+          callModel(models[2], 6000),
+        ]),
+        deadline,
+      ]);
+      replyText = winner.text;
+      usedModel = winner.model;
+    } catch (e) {
+      lastError = lastError || e.message;
+    } finally {
+      controllers.forEach((c) => {
+        try { c.abort(); } catch {}
+      });
     }
 
     if (!replyText) {
