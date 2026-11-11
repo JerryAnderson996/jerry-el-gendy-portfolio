@@ -1,5 +1,7 @@
-// Vercel Serverless Function — Real Gemini LLM Agent with RAG Context
-// Uses GEMINI_API_KEY configured in Vercel Environment Variables
+// Vercel Edge Runtime — up to 30s timeout and zero cold-start latency
+export const config = {
+  runtime: "edge",
+};
 
 const SYSTEM_PROMPT = `You are "Jerry's AI Agent (RAG v2.0)", the official AI assistant embedded in the personal portfolio of Jerry Anderson El Gendy.
 
@@ -89,32 +91,32 @@ function detectToolTrace(message = "") {
   return "gemini-2.5-flash · agent.reason_and_answer()";
 }
 
-module.exports = async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+export default async function handler(req) {
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Content-Type": "application/json",
+  };
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return new Response(null, { status: 200, headers: corsHeaders });
   }
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders });
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(503).json({ error: "GEMINI_API_KEY not configured", fallback: true });
+    return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured", fallback: true }), { status: 503, headers: corsHeaders });
   }
 
   try {
-    let body = req.body;
-    if (typeof body === "string") {
-      try { body = JSON.parse(body); } catch { body = {}; }
-    }
+    const body = await req.json().catch(() => ({}));
     const { message = "", history = [], lang = "en" } = body || {};
     const cleanMsg = String(message).trim().slice(0, 1200);
     if (!cleanMsg) {
-      return res.status(400).json({ error: "Empty message" });
+      return new Response(JSON.stringify({ error: "Empty message" }), { status: 400, headers: corsHeaders });
     }
 
     const contents = [];
@@ -142,31 +144,31 @@ module.exports = async function handler(req, res) {
         contents,
         generationConfig: {
           temperature: 0.35,
-          maxOutputTokens: 1024,
-          thinkingConfig: { thinkingBudget: 0 },
+          maxOutputTokens: 1200,
         },
       }),
     });
 
     if (!response.ok) {
       const errText = (await response.text()).slice(0, 300);
-      return res.status(502).json({ error: "Upstream LLM error", detail: `${model}: ${response.status} ${errText}`, fallback: true });
+      return new Response(JSON.stringify({ error: "Upstream LLM error", detail: `${model}: ${response.status} ${errText}`, fallback: true }), { status: 502, headers: corsHeaders });
     }
 
     const data = await response.json();
-    const replyText = data?.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("").trim();
-    const usedModel = model;
+    const parts = data?.candidates?.[0]?.content?.parts || [];
+    const replyText = parts.filter((p) => !p.thought).map((p) => p.text || "").join("").trim()
+      || parts.map((p) => p.text || "").join("").trim();
 
     if (!replyText) {
-      return res.status(502).json({ error: "Empty candidate", fallback: true });
+      return new Response(JSON.stringify({ error: "Empty candidate", fallback: true }), { status: 502, headers: corsHeaders });
     }
 
-    return res.status(200).json({
+    return new Response(JSON.stringify({
       reply: replyText,
       trace: detectToolTrace(cleanMsg),
-      model: usedModel,
-    });
+      model,
+    }), { status: 200, headers: corsHeaders });
   } catch (err) {
-    return res.status(500).json({ error: String(err?.message || err), fallback: true });
+    return new Response(JSON.stringify({ error: String(err?.message || err), fallback: true }), { status: 500, headers: corsHeaders });
   }
-};
+}
