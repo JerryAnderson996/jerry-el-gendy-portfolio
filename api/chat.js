@@ -132,7 +132,7 @@ module.exports = async function handler(req, res) {
       parts: [{ text: `[UI Language preference if ambiguous: ${lang}]\nUser question: ${cleanMsg}` }],
     });
 
-    const model = "gemini-2.5-flash";
+    const model = "gemini-3.8-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
     const response = await fetch(url, {
       method: "POST",
@@ -142,8 +142,7 @@ module.exports = async function handler(req, res) {
         contents,
         generationConfig: {
           temperature: 0.35,
-          maxOutputTokens: 320,
-          thinkingConfig: { thinkingBudget: 0 },
+          maxOutputTokens: 350,
         },
       }),
     });
