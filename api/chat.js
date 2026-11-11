@@ -102,13 +102,19 @@ export default async function handler(req) {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders });
-  }
-
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured", fallback: true }), { status: 503, headers: corsHeaders });
+  }
+
+  if (req.method === "GET") {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+    const d = await r.json();
+    const names = (d.models || []).map((m) => m.name.replace(/^models\//, ""));
+    return new Response(JSON.stringify({ models: names }), { status: 200, headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: corsHeaders });
   }
 
   try {
