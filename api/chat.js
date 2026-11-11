@@ -69,6 +69,32 @@ function isPromptInjection(text) {
   return INJECTION_PATTERNS.some((rx) => rx.test(text));
 }
 
+// Pre-LLM topic relevance router: saves API tokens & responds in <5ms for off-topic queries
+const ON_TOPIC_PATTERNS = [
+  // Greetings & conversational starters
+  /\b(hi|hello|hey|ciao|salve|buongiorno|buonasera|hola|buenas|bonjour|salut|hallo|guten\s+tag|who\s+are\s+you|chi\s+sei|wer\s+bist\s+du|qui\s+es[\s-]tu|quién\s+eres|help|aiuto|start)\b/i,
+  // Jerry & Companies & Locations & Universities
+  /\b(jerry|anderson|gendy|deda|dedagroup|dedabit|mediobanca|solution\s*bank|centrico|scai|uninettuno|generation|vittorini|a2a|whatscity|re-?generaction|milan|milano)\b/i,
+  // Roles & Career & Hiring
+  /\b(ai\s*engineer|data\s*engineer|developer|engineer|ingegner|sviluppator|role|ruolo|rolle|rôle|rol|work|lavor|arbeit|travail|trabaj|job|career|carriera|experienc|esperienz|erfahrung|expérience|experiencia|cv|resume|curriculum|profile|profil|bio|about|background|hire|hiring|assumer|assunzion|colloquio|interview|collabora|team|salary|stipendio|ral|remote|hybrid|ibrido|remoto|availab|disponibil)\b/i,
+  // Projects & Technical Domains & Stack
+  /\b(project|progett|projekt|projet|proyecto|agent|agentic|multi-?agent|rag|llm|llmops|openai|gemini|gpt|azure|foundry|search|qdrant|vector|pydantic|fastapi|python|\buv\b|langchain|crewai|mcp|pdf|cai|sinistr|claim|insurance|chatbot|bot|etl|pipeline|sql|ssms|oracle|pl\/?sql|mysql|mongodb|database|data\s*factory|adf|alteryx|informatica|cdi|rpa|power\s*automate|engage\s*one|java|spring|docker|microservice|api|apim|rest|git|scrum|agile|owasp|security|copilot|replit|wispr)\b/i,
+  // Metrics, Skills, Education, Certs, Languages, Contacts
+  /\b(skill|competenz|stack|tech|tool|strument|certific|badge|credly|deeplearning|study|studi|educat|formazion|ausbildung|degree|laurea|bachelor|universit|school|corso|bootcamp|lang|lingu|sprache|idiom|english|italian|spanish|german|french|inglese|italiano|spagnolo|tedesco|francese|contact|contatt|kontakt|contacto|email|mail|phone|telefon|number|numero|linkedin|link|website|sito|portfolio|metric|result|risultat|impact|impatto|kpi|percent|%)\b/i,
+];
+
+function isRelevantToJerry(text) {
+  return ON_TOPIC_PATTERNS.some((rx) => rx.test(text));
+}
+
+const OFF_TOPIC_REPLIES = {
+  en: "I'm **Jerry's AI Agent**, dedicated exclusively to **Jerry Anderson El Gendy's** professional portfolio. I don't answer general knowledge or unrelated questions — feel free to ask about his **AI & RAG projects**, his experience at **Deda AI & Dedagroup**, his **tech stack**, or how to **contact him**!",
+  it: "Sono l'**AI Agent di Jerry**, dedicato esclusivamente al profilo professionale di **Jerry Anderson El Gendy**. Non rispondo a domande di cultura generale o fuori tema — chiedimi pure dei suoi **progetti AI & RAG**, dell'esperienza in **Deda AI e Dedagroup**, del **tech stack** o dei suoi **contatti**!",
+  de: "Ich bin **Jerrys KI-Agent** und ausschließlich auf das Berufsprofil von **Jerry Anderson El Gendy** spezialisiert. Ich beantworte keine Allgemeinwissensfragen – frag mich gerne nach seinen **KI- & RAG-Projekten**, seiner Erfahrung bei **Deda AI & Dedagroup** oder seinen **Kontaktdaten**!",
+  fr: "Je suis l'**Agent IA de Jerry**, dédié exclusivement au profil professionnel de **Jerry Anderson El Gendy**. Je ne réponds pas aux questions de culture générale — interrogez-moi plutôt sur ses **projets IA & RAG**, son parcours chez **Deda AI & Dedagroup** ou ses **coordonnées** !",
+  es: "Soy el **Agente IA de Jerry**, dedicado exclusivamente al perfil profesional de **Jerry Anderson El Gendy**. No respondo preguntas de cultura general — ¡pregúntame sobre sus **proyectos de IA y RAG**, su experiencia en **Deda AI y Dedagroup** o cómo **contactarlo**!",
+};
+
 const SYSTEM_PROMPT = `You are "Jerry's AI Agent (RAG v2.0)", the official AI assistant embedded in the personal portfolio of Jerry Anderson El Gendy.
 
 ### SECURITY, IDENTITY & STRICT TOPIC BOUNDARY (MANDATORY)
@@ -241,6 +267,20 @@ export default async function handler(req) {
     }
 
     const safeLang = ["en", "it", "de", "fr", "es"].includes(lang) ? lang : "en";
+
+    // 4. Pre-LLM Topic Relevance Guardrail (zero latency & zero tokens for general knowledge queries like "Who is Napoleon?")
+    const hasHistoryContext = Array.isArray(history) && history.length > 0 && cleanMsg.split(/\s+/).length <= 5;
+    if (!isRelevantToJerry(cleanMsg) && !hasHistoryContext) {
+      return new Response(
+        JSON.stringify({
+          reply: OFF_TOPIC_REPLIES[safeLang] || OFF_TOPIC_REPLIES.en,
+          trace: "security.topic_guard('off_topic_blocked')",
+          model: "topic-guardrail",
+        }),
+        { status: 200, headers: securityHeaders }
+      );
+    }
+
     const contents = [];
     if (Array.isArray(history)) {
       for (const turn of history.slice(-4)) {
@@ -268,30 +308,38 @@ User question: ${cleanMsg}`,
 
     for (const model of models) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents,
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 550,
-          },
-        }),
-      });
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3500);
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents,
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 550,
+            },
+          }),
+        });
+        clearTimeout(timer);
 
-      if (response.ok) {
-        const data = await response.json();
-        const parts = data?.candidates?.[0]?.content?.parts || [];
-        const text =
-          parts.filter((p) => !p.thought).map((p) => p.text || "").join("").trim() ||
-          parts.map((p) => p.text || "").join("").trim();
-        if (text) {
-          replyText = text;
-          usedModel = model;
-          break;
+        if (response.ok) {
+          const data = await response.json();
+          const parts = data?.candidates?.[0]?.content?.parts || [];
+          const text =
+            parts.filter((p) => !p.thought).map((p) => p.text || "").join("").trim() ||
+            parts.map((p) => p.text || "").join("").trim();
+          if (text) {
+            replyText = text;
+            usedModel = model;
+            break;
+          }
         }
+      } catch {
+        clearTimeout(timer);
       }
     }
 
