@@ -140,40 +140,49 @@ export default async function handler(req) {
       parts: [{ text: `[UI Language preference if ambiguous: ${lang}]\nUser question: ${cleanMsg}` }],
     });
 
-    const model = "gemini-3.8-flash";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        contents,
-        generationConfig: {
-          temperature: 0.35,
-          maxOutputTokens: 1024,
-          thinkingConfig: { thinkingLevel: "LOW" },
-        },
-      }),
-    });
+    const models = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
+    let replyText = null;
+    let usedModel = models[0];
+    let lastErr = null;
 
-    if (!response.ok) {
-      const errText = (await response.text()).slice(0, 300);
-      return new Response(JSON.stringify({ error: "Upstream LLM error", detail: `${model}: ${response.status} ${errText}`, fallback: true }), { status: 502, headers: corsHeaders });
+    for (const model of models) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents,
+          generationConfig: {
+            temperature: 0.35,
+            maxOutputTokens: 700,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const parts = data?.candidates?.[0]?.content?.parts || [];
+        const text = parts.filter((p) => !p.thought).map((p) => p.text || "").join("").trim()
+          || parts.map((p) => p.text || "").join("").trim();
+        if (text) {
+          replyText = text;
+          usedModel = model;
+          break;
+        }
+      } else {
+        lastErr = `${model}: ${response.status} ${(await response.text()).slice(0, 200)}`;
+      }
     }
 
-    const data = await response.json();
-    const parts = data?.candidates?.[0]?.content?.parts || [];
-    const replyText = parts.filter((p) => !p.thought).map((p) => p.text || "").join("").trim()
-      || parts.map((p) => p.text || "").join("").trim();
-
     if (!replyText) {
-      return new Response(JSON.stringify({ error: "Empty candidate", fallback: true }), { status: 502, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: "Upstream LLM error", detail: lastErr, fallback: true }), { status: 502, headers: corsHeaders });
     }
 
     return new Response(JSON.stringify({
       reply: replyText,
       trace: detectToolTrace(cleanMsg),
-      model,
+      model: usedModel,
     }), { status: 200, headers: corsHeaders });
   } catch (err) {
     return new Response(JSON.stringify({ error: String(err?.message || err), fallback: true }), { status: 500, headers: corsHeaders });
