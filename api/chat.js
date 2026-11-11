@@ -132,21 +132,33 @@ module.exports = async function handler(req, res) {
       parts: [{ text: `[UI Language preference if ambiguous: ${lang}]\nUser question: ${cleanMsg}` }],
     });
 
-    const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    // Dynamically discover available flash/pro models or use current stable aliases
+    let models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest", "gemini-2.0-flash"];
+    try {
+      const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+      if (listResp.ok) {
+        const listData = await listResp.json();
+        const available = (listData.models || [])
+          .filter((m) => (m.supportedGenerationMethods || []).includes("generateContent"))
+          .map((m) => m.name.replace(/^models\//, ""))
+          .filter((n) => n.includes("gemini") && (n.includes("flash") || n.includes("pro")) && !n.includes("tts") && !n.includes("image") && !n.includes("embedding"));
+        if (available.length) {
+          models = available;
+        }
+      }
+    } catch {}
+
     let replyText = null;
     let usedModel = models[0];
-    let lastErr = null;
+    const errors = [];
 
-    for (const model of models) {
+    for (const model of models.slice(0, 4)) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
       const response = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents,
           generationConfig: {
             temperature: 0.35,
@@ -164,12 +176,12 @@ module.exports = async function handler(req, res) {
           break;
         }
       } else {
-        lastErr = `${model}: ${response.status} ${await response.text()}`;
+        errors.push(`${model}: ${response.status} ${(await response.text()).slice(0, 180)}`);
       }
     }
 
     if (!replyText) {
-      return res.status(502).json({ error: "Upstream LLM error", detail: lastErr, fallback: true });
+      return res.status(502).json({ error: "Upstream LLM error", detail: errors, fallback: true });
     }
 
     return res.status(200).json({
