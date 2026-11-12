@@ -182,7 +182,7 @@
       q_btn_2: "🤖 Progetti AI & RAG", q_prompt_2: "Quali progetti Agentic AI e RAG hai sviluppato?",
       q_btn_3: "📊 Risultati ETL & SQL", q_prompt_3: "Che risultati misurabili hai ottenuto su ETL e SQL in Dedagroup?",
       q_btn_4: "⚡ Tech Stack", q_prompt_4: "Qual è il tuo stack tecnologico completo tra AI e Data Engineering?",
-      q_btn_5: "📩 Contatti", q_prompt_5: "Come possiamo contattare Jerry per una collaborazione o colloquio?"
+      q_btn_5: "📩 Contatti", q_prompt_5: "Come possiamo contattare Jerry per una collaborazione?"
     },
 
     de: {
@@ -977,10 +977,118 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
     return best || localKB[0];
   }
 
+  /* ---------------------------------------------------------
+     8b. Interview Booking Agent (Human-in-the-loop via Gmail)
+     --------------------------------------------------------- */
+  const BOOK_I18N = {
+    en: { q_btn_book: "📅 Book an interview", b_intro: "Great! Fill in the form below: Jerry will receive your request on Gmail and confirm it personally. ✅", b_title: "Interview request", b_name: "Full name *", b_company: "Company", b_email: "Your email *", b_date: "Date (Mon–Fri) *", b_slot: "Time slot (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 hour)", b_s4: "Other time (to be agreed)", b_custom: "Proposed time (e.g. Tue 17:30)", b_notes: "Role / notes", b_submit: "Send request", b_sending: "Sending…", b_err_fields: "Please fill in name, a valid email and a date.", b_err_weekend: "Please pick a weekday (Monday–Friday).", b_err_rate: "Too many requests. Please try again later.", b_err: "Something went wrong. You can email Jerry directly at elgendyjerry@gmail.com.", b_ok: "✅ <strong>Request sent!</strong><br>Jerry has received your interview request on Gmail for <strong>{date}</strong> · <strong>{slot}</strong>. Once he approves it you'll receive a confirmation and a Google Calendar invite at <strong>{email}</strong>." },
+    it: { q_btn_book: "📅 Prenota un colloquio", b_intro: "Perfetto! Compila il modulo qui sotto: Jerry riceverà la richiesta su Gmail e la confermerà personalmente. ✅", b_title: "Richiesta di colloquio", b_name: "Nome e cognome *", b_company: "Azienda", b_email: "La tua email *", b_date: "Data (Lun–Ven) *", b_slot: "Fascia oraria (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 ora)", b_s4: "Altro orario (da concordare)", b_custom: "Orario proposto (es. Mar 17:30)", b_notes: "Posizione / note", b_submit: "Invia richiesta", b_sending: "Invio in corso…", b_err_fields: "Inserisci nome, un'email valida e una data.", b_err_weekend: "Scegli un giorno feriale (lunedì–venerdì).", b_err_rate: "Troppe richieste. Riprova più tardi.", b_err: "Qualcosa è andato storto. Puoi scrivere direttamente a elgendyjerry@gmail.com.", b_ok: "✅ <strong>Richiesta inviata!</strong><br>Jerry ha ricevuto su Gmail la tua richiesta di colloquio per <strong>{date}</strong> · <strong>{slot}</strong>. Appena la approva riceverai conferma e invito Google Calendar su <strong>{email}</strong>." },
+    de: { q_btn_book: "📅 Interview buchen", b_intro: "Super! Fülle das Formular aus: Jerry erhält deine Anfrage per Gmail und bestätigt sie persönlich. ✅", b_title: "Interview-Anfrage", b_name: "Vollständiger Name *", b_company: "Unternehmen", b_email: "Deine E-Mail *", b_date: "Datum (Mo–Fr) *", b_slot: "Zeitfenster (MEZ)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 Stunde)", b_s4: "Andere Zeit (nach Absprache)", b_custom: "Vorgeschlagene Zeit (z. B. Di 17:30)", b_notes: "Position / Notizen", b_submit: "Anfrage senden", b_sending: "Wird gesendet…", b_err_fields: "Bitte Name, gültige E-Mail und Datum angeben.", b_err_weekend: "Bitte einen Werktag wählen (Montag–Freitag).", b_err_rate: "Zu viele Anfragen. Bitte später erneut versuchen.", b_err: "Etwas ist schiefgelaufen. Schreib Jerry direkt an elgendyjerry@gmail.com.", b_ok: "✅ <strong>Anfrage gesendet!</strong><br>Jerry hat deine Interview-Anfrage für <strong>{date}</strong> · <strong>{slot}</strong> per Gmail erhalten. Nach seiner Freigabe erhältst du eine Bestätigung und eine Google-Calendar-Einladung an <strong>{email}</strong>." },
+    fr: { q_btn_book: "📅 Réserver un entretien", b_intro: "Parfait ! Remplissez le formulaire : Jerry recevra votre demande sur Gmail et la confirmera personnellement. ✅", b_title: "Demande d'entretien", b_name: "Nom complet *", b_company: "Entreprise", b_email: "Votre e-mail *", b_date: "Date (lun–ven) *", b_slot: "Créneau (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 heure)", b_s4: "Autre horaire (à convenir)", b_custom: "Horaire proposé (ex. mar 17:30)", b_notes: "Poste / notes", b_submit: "Envoyer la demande", b_sending: "Envoi…", b_err_fields: "Merci d'indiquer nom, e-mail valide et date.", b_err_weekend: "Choisissez un jour ouvré (lundi–vendredi).", b_err_rate: "Trop de demandes. Réessayez plus tard.", b_err: "Une erreur est survenue. Écrivez directement à elgendyjerry@gmail.com.", b_ok: "✅ <strong>Demande envoyée !</strong><br>Jerry a reçu votre demande d'entretien sur Gmail pour le <strong>{date}</strong> · <strong>{slot}</strong>. Dès validation, vous recevrez une confirmation et une invitation Google Agenda à <strong>{email}</strong>." },
+    es: { q_btn_book: "📅 Reservar entrevista", b_intro: "¡Perfecto! Rellena el formulario: Jerry recibirá tu solicitud en Gmail y la confirmará personalmente. ✅", b_title: "Solicitud de entrevista", b_name: "Nombre completo *", b_company: "Empresa", b_email: "Tu email *", b_date: "Fecha (lun–vie) *", b_slot: "Franja horaria (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 hora)", b_s4: "Otro horario (a acordar)", b_custom: "Horario propuesto (ej. mar 17:30)", b_notes: "Puesto / notas", b_submit: "Enviar solicitud", b_sending: "Enviando…", b_err_fields: "Indica nombre, un email válido y una fecha.", b_err_weekend: "Elige un día laborable (lunes–viernes).", b_err_rate: "Demasiadas solicitudes. Inténtalo más tarde.", b_err: "Algo salió mal. Puedes escribir a elgendyjerry@gmail.com.", b_ok: "✅ <strong>¡Solicitud enviada!</strong><br>Jerry ha recibido en Gmail tu solicitud de entrevista para el <strong>{date}</strong> · <strong>{slot}</strong>. Cuando la apruebe recibirás confirmación e invitación de Google Calendar en <strong>{email}</strong>." },
+  };
+  Object.keys(BOOK_I18N).forEach((l) => Object.assign(I18N[l], BOOK_I18N[l]));
+
+  const BOOK_INTENT = /\b(book|booking|schedule|interview|meeting|appointment|call\s+with|colloquio|prenot|appuntament|fissare|incontro|termin|vorstellungsgespr|gespräch|entretien|rendez-vous|réserver|entrevista|reservar|cita|reunión)\b/i;
+
+  function nextWeekday() {
+    const d = new Date();
+    do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6);
+    return d.toISOString().slice(0, 10);
+  }
+
+  function showBookingCard() {
+    const t = I18N[currentLang] || I18N.en;
+    addBotMessage(t.b_intro, "agent.tool_select('book_interview')");
+    const wrap = document.createElement("div");
+    wrap.className = "chat-msg bot booking-msg";
+    const minDate = new Date().toISOString().slice(0, 10);
+    wrap.innerHTML = `
+      <form class="booking-card" novalidate>
+        <div class="booking-head mono">📅 ${escapeHTML(t.b_title)}</div>
+        <label>${escapeHTML(t.b_name)}<input name="name" required maxlength="120" autocomplete="name" /></label>
+        <label>${escapeHTML(t.b_company)}<input name="company" maxlength="120" autocomplete="organization" /></label>
+        <label>${escapeHTML(t.b_email)}<input name="email" type="email" required maxlength="160" autocomplete="email" /></label>
+        <div class="booking-row">
+          <label>${escapeHTML(t.b_date)}<input name="date" type="date" required min="${minDate}" value="${nextWeekday()}" /></label>
+          <label>${escapeHTML(t.b_slot)}
+            <select name="slot">
+              <option value="12:00 – 12:30 CET">${t.b_s1}</option>
+              <option value="12:30 – 13:00 CET">${t.b_s2}</option>
+              <option value="12:00–13:00 CET">${t.b_s3}</option>
+              <option value="custom">${escapeHTML(t.b_s4)}</option>
+            </select>
+          </label>
+        </div>
+        <label class="booking-custom" hidden>${escapeHTML(t.b_custom)}<input name="customTime" maxlength="120" /></label>
+        <label>${escapeHTML(t.b_notes)}<textarea name="notes" rows="2" maxlength="500"></textarea></label>
+        <input name="website" class="booking-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <p class="booking-error" role="alert"></p>
+        <button type="submit" class="booking-submit">${escapeHTML(t.b_submit)} →</button>
+      </form>`;
+    chatMessages.appendChild(wrap);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const form = $("form", wrap);
+    const slotSel = form.elements.slot;
+    const customBox = $(".booking-custom", form);
+    const errEl = $(".booking-error", form);
+    const btn = $(".booking-submit", form);
+    slotSel.addEventListener("change", () => { customBox.hidden = slotSel.value !== "custom"; });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errEl.textContent = "";
+      const f = form.elements;
+      if (f.website.value) return; // honeypot (bots)
+      const data = {
+        name: f.name.value.trim(),
+        company: f.company.value.trim(),
+        email: f.email.value.trim(),
+        date: f.date.value,
+        slot: slotSel.value === "custom" ? "Custom (to be agreed)" : slotSel.value,
+        customTime: slotSel.value === "custom" ? f.customTime.value.trim() : "",
+        notes: f.notes.value.trim(),
+        lang: currentLang,
+      };
+      if (!data.name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) || !data.date) {
+        errEl.textContent = t.b_err_fields; return;
+      }
+      const day = new Date(data.date + "T12:00:00").getDay();
+      if (day === 0 || day === 6) { errEl.textContent = t.b_err_weekend; return; }
+
+      btn.disabled = true; btn.textContent = t.b_sending;
+      try {
+        const resp = await fetch("/api/book", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (resp.status === 429) throw new Error("rate");
+        const json = await resp.json().catch(() => ({}));
+        if (!resp.ok || !json.ok) throw new Error("fail");
+        wrap.remove();
+        const slotLabel = data.customTime ? data.customTime : data.slot;
+        addBotMessage(
+          t.b_ok.replace("{date}", escapeHTML(data.date)).replace("{slot}", escapeHTML(slotLabel)).replace("{email}", escapeHTML(data.email)),
+          json.trace || "agent.tool_call('book_interview', status='pending_gmail_approval')"
+        );
+      } catch (err) {
+        errEl.textContent = err.message === "rate" ? t.b_err_rate : t.b_err;
+        btn.disabled = false; btn.textContent = t.b_submit + " →";
+      }
+    });
+  }
+
   let busy = false;
   async function handleQuestion(text) {
     const clean = text.trim();
     if (!clean || busy) return;
+    if (BOOK_INTENT.test(clean)) {
+      addUserMessage(clean);
+      showBookingCard();
+      return;
+    }
     busy = true;
     addUserMessage(clean);
 
@@ -1047,6 +1155,10 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
     handleQuestion(val);
   });
   $$("button", chatQuick).forEach((b) => {
+    if (b.id === "quickBook") {
+      b.addEventListener("click", () => { addUserMessage(b.textContent); showBookingCard(); });
+      return;
+    }
     b.addEventListener("click", () => handleQuestion(b.getAttribute("data-q")));
   });
   $$(".chat-messages").forEach((el) => {

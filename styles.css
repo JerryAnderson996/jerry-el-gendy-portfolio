@@ -598,6 +598,36 @@ code { font-family: var(--mono); background: rgba(34, 211, 238, 0.12); color: va
 }
 .chat-send:hover { transform: scale(1.05); box-shadow: 0 0 18px rgba(34, 211, 238, 0.55); }
 
+/* Interview booking card (inside chat) */
+.chat-quick button.quick-book {
+  background: linear-gradient(120deg, rgba(52, 211, 153, 0.22), rgba(34, 211, 238, 0.18));
+  border-color: rgba(52, 211, 153, 0.55); color: #fff; font-weight: 600;
+}
+.booking-msg { max-width: 100%; width: 100%; }
+.booking-card {
+  display: grid; gap: 9px; padding: 14px; border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(52, 211, 153, 0.4);
+}
+.booking-head { font-size: 0.78rem; color: var(--green); letter-spacing: 0.05em; }
+.booking-card label { display: grid; gap: 4px; font-size: 0.74rem; color: var(--muted); }
+.booking-card input, .booking-card select, .booking-card textarea {
+  width: 100%; background: rgba(7, 10, 18, 0.8); border: 1px solid var(--border);
+  border-radius: 9px; padding: 8px 10px; color: var(--text);
+  font-family: var(--font); font-size: 0.84rem; outline: none; color-scheme: dark;
+}
+.booking-card input:focus, .booking-card select:focus, .booking-card textarea:focus { border-color: var(--cyan); }
+.booking-card textarea { resize: vertical; }
+.booking-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.booking-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.booking-error { color: var(--pink); font-size: 0.76rem; min-height: 0; }
+.booking-error:empty { display: none; }
+.booking-submit {
+  border: 0; border-radius: 10px; padding: 10px; cursor: pointer;
+  background: var(--grad); color: #090d18; font-family: var(--font); font-weight: 700; font-size: 0.86rem;
+}
+.booking-submit:disabled { opacity: 0.6; cursor: wait; }
+@media (max-width: 420px) { .booking-row { grid-template-columns: 1fr; } }
+
 /* Reveal animation */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(.2, .8, .2, 1), transform 0.8s cubic-bezier(.2, .8, .2, 1); }
 .reveal.visible { opacity: 1; transform: none; }
