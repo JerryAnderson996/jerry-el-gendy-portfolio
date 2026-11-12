@@ -147,40 +147,9 @@ export default async function handler(req) {
     const approveMailto = `mailto:${email}?subject=${approveMailSubject}&body=${approveMailBody}`;
     const rescheduleMailto = `mailto:${email}?subject=${rescheduleMailSubject}&body=${rescheduleMailBody}`;
 
-    // Deliver notification to Jerry's Gmail via:
-    // 1) Google Apps Script Webhook (<0.5s, HTML buttons in Gmail) if GOOGLE_SCRIPT_WEBHOOK_URL is set
-    // 2) Web3Forms (<0.5s) if WEB3FORMS_ACCESS_KEY is set
-    // 3) Immediate client-side FormSubmit handoff (0ms server wait)
+    // Deliver notification to Jerry's Gmail via Web3Forms (if configured) or FormSubmit (with 7s timeout)
     let delivered = false;
-    const gasUrl = process.env.GOOGLE_SCRIPT_WEBHOOK_URL;
     const web3Key = process.env.WEB3FORMS_ACCESS_KEY;
-
-    if (gasUrl) {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 6000);
-      try {
-        const gResp = await fetch(gasUrl, {
-          method: "POST",
-          signal: ctrl.signal,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            company: company || "Non specificata",
-            email,
-            date,
-            slot: displaySlot,
-            notes: notes || "Nessuna nota aggiuntiva",
-            gcalUrl,
-            approveMailto,
-            rescheduleMailto,
-          }),
-        });
-        if (gResp.ok) {
-          const gJson = await gResp.json().catch(() => ({ ok: true }));
-          delivered = gJson.ok !== false;
-        }
-      } catch {} finally { clearTimeout(t); }
-    }
 
     const formPayload = {
       _subject: `[Approval Needed] Colloquio richiesto da ${name}${company ? ` (${company})` : ""} - ${date}`,
@@ -197,7 +166,7 @@ export default async function handler(req) {
       Proponi_Altro_Orario: rescheduleMailto,
     };
 
-    if (!delivered && web3Key) {
+    if (web3Key) {
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), 5000);
       try {
@@ -222,6 +191,29 @@ export default async function handler(req) {
           }),
         });
         delivered = wResp.ok;
+      } catch {} finally { clearTimeout(t); }
+    }
+
+    if (!delivered) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 7000);
+      try {
+        const fsResp = await fetch("https://formsubmit.co/ajax/elgendyjerry@gmail.com", {
+          method: "POST",
+          signal: ctrl.signal,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Origin: "https://jerry-el-gendy.vercel.app",
+            Referer: "https://jerry-el-gendy.vercel.app/",
+            "User-Agent": "Mozilla/5.0 (compatible; JerryPortfolioAgent/1.0)",
+          },
+          body: JSON.stringify(formPayload),
+        });
+        if (fsResp.ok) {
+          const fsJson = await fsResp.json().catch(() => ({}));
+          delivered = fsJson.success === "true" || fsJson.success === true;
+        }
       } catch {} finally { clearTimeout(t); }
     }
 
