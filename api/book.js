@@ -152,19 +152,18 @@ export default async function handler(req) {
     const web3Key = process.env.WEB3FORMS_ACCESS_KEY;
 
     const formPayload = {
-      _subject: `🗓️ [Approval Needed] Colloquio richiesto da ${name}${company ? ` (${company})` : ""} — ${date}`,
-      _template: "box",
+      _subject: `[Approval Needed] Colloquio richiesto da ${name}${company ? ` (${company})` : ""} - ${date}`,
+      _template: "table",
       _replyto: email,
-      "Candidato / Host": "Jerry Anderson El Gendy",
-      "Recruiter / Richiedente": name,
+      Recruiter: name,
       Azienda: company || "Non specificata",
-      "Email Recruiter": email,
-      "Data Richiesta": date,
-      "Fascia Oraria (Lun-Ven 12-13 o custom)": displaySlot,
-      "Note / Posizione": notes || "Nessuna nota aggiuntiva",
-      "✅ 1-CLICK APPROVA SU GOOGLE CALENDAR (invita il recruiter)": gcalUrl,
-      "✉️ APPROVA CON EMAIL PRECOMPILATA": approveMailto,
-      "🔄 PROPONI ALTRO ORARIO": rescheduleMailto,
+      Email_Recruiter: email,
+      Data_Richiesta: date,
+      Fascia_Oraria: displaySlot,
+      Note_Posizione: notes || "Nessuna nota aggiuntiva",
+      Approva_Google_Calendar: gcalUrl,
+      Approva_Email: approveMailto,
+      Proponi_Altro_Orario: rescheduleMailto,
     };
 
     if (web3Key) {
