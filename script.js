@@ -1067,6 +1067,16 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
         if (resp.status === 429) throw new Error("rate");
         const json = await resp.json().catch(() => ({}));
         if (!resp.ok || !json.ok) throw new Error("fail");
+        if (!json.delivered) {
+          if (!json.clientDeliveryUrl || !json.clientPayload) throw new Error("fail");
+          const cResp = await fetch(json.clientDeliveryUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(json.clientPayload),
+          });
+          const cJson = await cResp.json().catch(() => ({}));
+          if (!cResp.ok || !(cJson.success === "true" || cJson.success === true)) throw new Error("fail");
+        }
         wrap.remove();
         const slotLabel = data.customTime ? data.customTime : data.slot;
         addBotMessage(

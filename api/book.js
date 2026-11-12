@@ -147,75 +147,83 @@ export default async function handler(req) {
     const approveMailto = `mailto:${email}?subject=${approveMailSubject}&body=${approveMailBody}`;
     const rescheduleMailto = `mailto:${email}?subject=${rescheduleMailSubject}&body=${rescheduleMailBody}`;
 
-    // Deliver notification to Jerry's Gmail via FormSubmit AJAX API (or Web3Forms if key is set)
+    // Deliver notification to Jerry's Gmail via Web3Forms (if configured) or FormSubmit (with 7s timeout)
     let delivered = false;
     const web3Key = process.env.WEB3FORMS_ACCESS_KEY;
 
+    const formPayload = {
+      _subject: `🗓️ [Approval Needed] Colloquio richiesto da ${name}${company ? ` (${company})` : ""} — ${date}`,
+      _template: "box",
+      _replyto: email,
+      "Candidato / Host": "Jerry Anderson El Gendy",
+      "Recruiter / Richiedente": name,
+      Azienda: company || "Non specificata",
+      "Email Recruiter": email,
+      "Data Richiesta": date,
+      "Fascia Oraria (Lun-Ven 12-13 o custom)": displaySlot,
+      "Note / Posizione": notes || "Nessuna nota aggiuntiva",
+      "✅ 1-CLICK APPROVA SU GOOGLE CALENDAR (invita il recruiter)": gcalUrl,
+      "✉️ APPROVA CON EMAIL PRECOMPILATA": approveMailto,
+      "🔄 PROPONI ALTRO ORARIO": rescheduleMailto,
+    };
+
     if (web3Key) {
-      const wResp = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          access_key: web3Key,
-          subject: `🗓️ [Interview Approval Needed] ${name}${company ? ` (${company})` : ""} — ${date} (${displaySlot})`,
-          from_name: "Jerry's Portfolio AI Agent",
-          replyto: email,
-          Name: name,
-          Company: company || "—",
-          "Recruiter Email": email,
-          "Requested Date": date,
-          "Time Slot": displaySlot,
-          "Role / Notes": notes || "—",
-          "✅ APPROVE & SEND GOOGLE CALENDAR INVITE": gcalUrl,
-          "✉️ APPROVE VIA EMAIL": approveMailto,
-          "🔄 PROPOSE ANOTHER TIME": rescheduleMailto,
-        }),
-      });
-      delivered = wResp.ok;
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 5000);
+      try {
+        const wResp = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          signal: ctrl.signal,
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            access_key: web3Key,
+            subject: `🗓️ [Interview Approval Needed] ${name}${company ? ` (${company})` : ""} — ${date} (${displaySlot})`,
+            from_name: "Jerry's Portfolio AI Agent",
+            replyto: email,
+            Name: name,
+            Company: company || "—",
+            "Recruiter Email": email,
+            "Requested Date": date,
+            "Time Slot": displaySlot,
+            "Role / Notes": notes || "—",
+            "✅ APPROVE & SEND GOOGLE CALENDAR INVITE": gcalUrl,
+            "✉️ APPROVE VIA EMAIL": approveMailto,
+            "🔄 PROPOSE ANOTHER TIME": rescheduleMailto,
+          }),
+        });
+        delivered = wResp.ok;
+      } catch {} finally { clearTimeout(t); }
     }
 
     if (!delivered) {
-      const fsResp = await fetch("https://formsubmit.co/ajax/elgendyjerry@gmail.com", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Origin: "https://jerry-el-gendy.vercel.app",
-          Referer: "https://jerry-el-gendy.vercel.app/",
-        },
-        body: JSON.stringify({
-          _subject: `🗓️ [Approval Needed] Colloquio richiesto da ${name}${company ? ` (${company})` : ""} — ${date}`,
-          _template: "box",
-          _replyto: email,
-          "Candidato / Host": "Jerry Anderson El Gendy",
-          "Recruiter / Richiedente": name,
-          Azienda: company || "Non specificata",
-          "Email Recruiter": email,
-          "Data Richiesta": date,
-          "Fascia Oraria (Lun-Ven 12-13 o custom)": displaySlot,
-          "Note / Posizione": notes || "Nessuna nota aggiuntiva",
-          "✅ 1-CLICK APPROVA SU GOOGLE CALENDAR (invita il recruiter)": gcalUrl,
-          "✉️ APPROVA CON EMAIL PRECOMPILATA": approveMailto,
-          "🔄 PROPONI ALTRO ORARIO": rescheduleMailto,
-        }),
-      });
-      if (fsResp.ok) {
-        const fsJson = await fsResp.json().catch(() => ({}));
-        delivered = fsJson.success === "true" || fsJson.success === true;
-      }
-    }
-
-    if (!delivered) {
-      return new Response(JSON.stringify({ ok: false, error: "Notification delivery failed" }), {
-        status: 502,
-        headers,
-      });
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 7000);
+      try {
+        const fsResp = await fetch("https://formsubmit.co/ajax/elgendyjerry@gmail.com", {
+          method: "POST",
+          signal: ctrl.signal,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Origin: "https://jerry-el-gendy.vercel.app",
+            Referer: "https://jerry-el-gendy.vercel.app/",
+            "User-Agent": "Mozilla/5.0 (compatible; JerryPortfolioAgent/1.0)",
+          },
+          body: JSON.stringify(formPayload),
+        });
+        if (fsResp.ok) {
+          const fsJson = await fsResp.json().catch(() => ({}));
+          delivered = fsJson.success === "true" || fsJson.success === true;
+        }
+      } catch {} finally { clearTimeout(t); }
     }
 
     return new Response(
       JSON.stringify({
         ok: true,
         delivered,
+        clientDeliveryUrl: delivered ? undefined : "https://formsubmit.co/ajax/elgendyjerry@gmail.com",
+        clientPayload: delivered ? undefined : formPayload,
         trace: "agent.tool_call('book_interview', status='pending_gmail_approval')",
         summary: { name, company, email, date, displaySlot },
       }),
