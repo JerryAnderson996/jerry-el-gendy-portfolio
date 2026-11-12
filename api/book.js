@@ -205,6 +205,13 @@ export default async function handler(req) {
       }
     }
 
+    if (!delivered) {
+      return new Response(JSON.stringify({ ok: false, error: "Notification delivery failed" }), {
+        status: 502,
+        headers,
+      });
+    }
+
     return new Response(
       JSON.stringify({
         ok: true,
