@@ -1025,9 +1025,8 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
     de: { q_btn_book: "📅 Interview buchen", b_intro: "Super! Fülle das Formular aus: Jerry erhält deine Anfrage per Gmail und bestätigt sie persönlich. ✅", b_title: "Interview-Anfrage", b_name: "Vollständiger Name *", b_company: "Unternehmen", b_email: "Deine E-Mail *", b_date: "Datum (Mo–Fr) *", b_slot: "Zeitfenster (MEZ)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 Stunde)", b_s4: "Andere Zeit (nach Absprache)", b_custom: "Vorgeschlagene Zeit (z. B. Di 17:30)", b_notes: "Position / Notizen", b_submit: "Anfrage senden", b_sending: "Wird gesendet…", b_err_fields: "Bitte Name, gültige E-Mail und Datum angeben.", b_err_weekend: "Bitte einen Werktag wählen (Montag–Freitag).", b_err_rate: "Zu viele Anfragen. Bitte später erneut versuchen.", b_err: "Etwas ist schiefgelaufen. Schreib Jerry direkt an elgendyjerry@gmail.com.", b_ok: "✅ <strong>Anfrage gesendet!</strong><br>Jerry hat deine Interview-Anfrage für <strong>{date}</strong> · <strong>{slot}</strong> per Gmail erhalten. Nach seiner Freigabe erhältst du eine Bestätigung und eine Google-Calendar-Einladung an <strong>{email}</strong>." },
     fr: { q_btn_book: "📅 Réserver un entretien", b_intro: "Parfait ! Remplissez le formulaire : Jerry recevra votre demande sur Gmail et la confirmera personnellement. ✅", b_title: "Demande d'entretien", b_name: "Nom complet *", b_company: "Entreprise", b_email: "Votre e-mail *", b_date: "Date (lun–ven) *", b_slot: "Créneau (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 heure)", b_s4: "Autre horaire (à convenir)", b_custom: "Horaire proposé (ex. mar 17:30)", b_notes: "Poste / notes", b_submit: "Envoyer la demande", b_sending: "Envoi…", b_err_fields: "Merci d'indiquer nom, e-mail valide et date.", b_err_weekend: "Choisissez un jour ouvré (lundi–vendredi).", b_err_rate: "Trop de demandes. Réessayez plus tard.", b_err: "Une erreur est survenue. Écrivez directement à elgendyjerry@gmail.com.", b_ok: "✅ <strong>Demande envoyée !</strong><br>Jerry a reçu votre demande d'entretien sur Gmail pour le <strong>{date}</strong> · <strong>{slot}</strong>. Dès validation, vous recevrez une confirmation et une invitation Google Agenda à <strong>{email}</strong>." },
     es: { q_btn_book: "📅 Reservar entrevista", b_intro: "¡Perfecto! Rellena el formulario: Jerry recibirá tu solicitud en Gmail y la confirmará personalmente. ✅", b_title: "Solicitud de entrevista", b_name: "Nombre completo *", b_company: "Empresa", b_email: "Tu email *", b_date: "Fecha (lun–vie) *", b_slot: "Franja horaria (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 hora)", b_s4: "Otro horario (a acordar)", b_custom: "Horario propuesto (ej. mar 17:30)", b_notes: "Puesto / notas", b_submit: "Enviar solicitud", b_sending: "Enviando…", b_err_fields: "Indica nombre, un email válido y una fecha.", b_err_weekend: "Elige un día laborable (lunes–viernes).", b_err_rate: "Demasiadas solicitudes. Inténtalo más tarde.", b_err: "Algo salió mal. Puedes escribir a elgendyjerry@gmail.com.", b_ok: "✅ <strong>¡Solicitud enviada!</strong><br>Jerry ha recibido en Gmail tu solicitud de entrevista para el <strong>{date}</strong> · <strong>{slot}</strong>. Cuando la apruebe recibirás confirmación e invitación de Google Calendar en <strong>{email}</strong>." },
-    chat_Input_dummy: ""
   };
-  Object.keys(BOOK_I18N).forEach((l) => Object.assign(I18N[l], BOOK_I18N[l]));
+  Object.keys(BOOK_I18N).forEach((l) => { if (I18N[l]) Object.assign(I18N[l], BOOK_I18N[l]); });
 
   /* ---------------------------------------------------------
      8c. Multilingual Labels for CV Download, Case Studies & JD Matcher
@@ -1648,7 +1647,15 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
   }
 
   $$("[data-case]").forEach((btn) => {
-    btn.addEventListener("click", () => openCaseStudy(btn.dataset.case));
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openCaseStudy(btn.dataset.case);
+    });
+    const card = btn.closest(".project");
+    if (card) {
+      card.style.cursor = "pointer";
+      card.addEventListener("click", () => openCaseStudy(btn.dataset.case));
+    }
   });
   if (caseModalClose) caseModalClose.addEventListener("click", closeCaseStudy);
   if (caseBackdrop) caseBackdrop.addEventListener("click", closeCaseStudy);
