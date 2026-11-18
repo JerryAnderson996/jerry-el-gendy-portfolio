@@ -628,6 +628,140 @@ code { font-family: var(--mono); background: rgba(34, 211, 238, 0.12); color: va
 .booking-submit:disabled { opacity: 0.6; cursor: wait; }
 @media (max-width: 420px) { .booking-row { grid-template-columns: 1fr; } }
 
+/* =================== CV DOWNLOAD BUTTON =================== */
+.btn-cv {
+  background: linear-gradient(120deg, rgba(34, 211, 238, 0.14), rgba(167, 139, 250, 0.16));
+  color: #fff;
+  border-color: rgba(34, 211, 238, 0.45);
+  box-shadow: 0 8px 26px -10px rgba(34, 211, 238, 0.45);
+}
+.btn-cv:hover {
+  border-color: var(--violet);
+  background: linear-gradient(120deg, rgba(34, 211, 238, 0.24), rgba(167, 139, 250, 0.28));
+  box-shadow: 0 12px 32px -10px rgba(167, 139, 250, 0.65);
+}
+
+/* =================== CASE STUDY BUTTON & MODAL =================== */
+.case-btn {
+  margin-top: 4px;
+  width: 100%;
+  display: inline-flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: 12px; cursor: pointer;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  color: #e9d5ff; font-size: 0.78rem; font-weight: 500;
+  transition: background 0.22s, border-color 0.22s, color 0.22s, transform 0.2s;
+}
+.case-btn:hover {
+  background: rgba(34, 211, 238, 0.14);
+  border-color: var(--cyan); color: #fff;
+  transform: translateY(-1px);
+}
+
+.case-modal {
+  position: fixed; inset: 0; z-index: 120;
+  display: grid; place-items: center; padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.case-modal.open { opacity: 1; pointer-events: auto; }
+.case-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(4, 7, 14, 0.82);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.case-dialog {
+  position: relative; z-index: 1;
+  width: min(860px, 100%); max-height: min(86vh, 840px);
+  background: #0b1020;
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  border-radius: 22px;
+  box-shadow: 0 30px 90px -15px rgba(0, 0, 0, 0.92), 0 0 70px -25px rgba(34, 211, 238, 0.35);
+  display: flex; flex-direction: column; overflow: hidden;
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1);
+}
+.case-modal.open .case-dialog { transform: none; }
+.case-header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 22px 26px;
+  background: linear-gradient(120deg, rgba(167, 139, 250, 0.14), rgba(34, 211, 238, 0.08));
+  border-bottom: 1px solid var(--border);
+}
+.case-type { font-size: 0.75rem; color: var(--cyan); display: block; margin-bottom: 4px; }
+.case-header h3 { font-size: clamp(1.25rem, 2.5vw, 1.65rem); line-height: 1.2; }
+.case-close {
+  width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05); color: var(--muted); cursor: pointer;
+  display: grid; place-items: center; font-size: 0.95rem; flex-shrink: 0;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.case-close:hover { color: #fff; border-color: var(--cyan); background: rgba(34, 211, 238, 0.12); }
+
+.case-body {
+  padding: 24px 26px 28px; overflow-y: auto;
+  display: grid; gap: 22px;
+  scrollbar-width: thin; scrollbar-color: #334155 transparent;
+}
+.case-kpis {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.case-kpi {
+  padding: 14px 16px; border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border);
+}
+.case-kpi strong {
+  display: block; font-size: 1.35rem; font-family: var(--mono);
+  background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.case-kpi span { font-size: 0.8rem; color: var(--muted); }
+.case-sec h4 {
+  font-family: var(--mono); font-size: 0.82rem; color: var(--cyan);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;
+}
+.case-sec p { color: #cbd5e1; font-size: 0.95rem; line-height: 1.65; }
+.case-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.case-list { list-style: none; display: grid; gap: 9px; }
+.case-list li {
+  position: relative; padding-left: 20px; font-size: 0.91rem; color: #cbd5e1; line-height: 1.55;
+}
+.case-list li::before { content: "▹"; position: absolute; left: 0; color: var(--violet); }
+.case-code {
+  padding: 16px 18px; border-radius: 14px;
+  background: #070a12; border: 1px solid var(--border-strong);
+  font-family: var(--mono); font-size: 0.78rem; line-height: 1.65;
+  color: #a5f3fc; overflow-x: auto; white-space: pre;
+}
+
+/* =================== JD FIT CHECK (IN CHATBOT) =================== */
+.chat-quick button.quick-jd {
+  background: linear-gradient(120deg, rgba(167, 139, 250, 0.28), rgba(244, 114, 182, 0.22));
+  border-color: rgba(167, 139, 250, 0.65); color: #fff; font-weight: 600;
+}
+.jd-card {
+  display: grid; gap: 10px; padding: 14px; border-radius: 16px;
+  background: rgba(167, 139, 250, 0.06); border: 1px solid rgba(167, 139, 250, 0.42);
+}
+.jd-head { font-size: 0.78rem; color: var(--violet); letter-spacing: 0.04em; font-weight: 700; }
+.jd-presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.jd-presets button {
+  font-family: var(--mono); font-size: 0.7rem; padding: 4px 9px; border-radius: 8px;
+  background: rgba(34, 211, 238, 0.09); border: 1px solid rgba(34, 211, 238, 0.28);
+  color: #a5f3fc; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+}
+.jd-presets button:hover { background: rgba(34, 211, 238, 0.2); border-color: var(--cyan); }
+.jd-card textarea {
+  width: 100%; background: rgba(7, 10, 18, 0.85); border: 1px solid var(--border);
+  border-radius: 10px; padding: 9px 11px; color: var(--text);
+  font-family: var(--font); font-size: 0.83rem; outline: none; resize: vertical;
+}
+.jd-card textarea:focus { border-color: var(--violet); }
+
+@media (max-width: 680px) {
+  .case-kpis, .case-grid-2 { grid-template-columns: 1fr; }
+  .case-header, .case-body { padding: 18px; }
+}
+
 /* Reveal animation */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(.2, .8, .2, 1), transform 0.8s cubic-bezier(.2, .8, .2, 1); }
 .reveal.visible { opacity: 1; transform: none; }

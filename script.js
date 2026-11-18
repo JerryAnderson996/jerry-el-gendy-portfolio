@@ -438,6 +438,14 @@
     }
   };
 
+  const CV_FILES = {
+    en: { file: "assets/CV_Jerry_Anderson_El_Gendy_EN.pdf", name: "CV_Jerry_Anderson_El_Gendy_EN.pdf", badge: "EN · PDF" },
+    it: { file: "assets/CV_Jerry_Anderson_El_Gendy_IT.pdf", name: "CV_Jerry_Anderson_El_Gendy_IT.pdf", badge: "IT · PDF" },
+    de: { file: "assets/CV_Jerry_Anderson_El_Gendy_DE.pdf", name: "CV_Jerry_Anderson_El_Gendy_DE.pdf", badge: "DE · PDF" },
+    fr: { file: "assets/CV_Jerry_Anderson_El_Gendy_FR.pdf", name: "CV_Jerry_Anderson_El_Gendy_FR.pdf", badge: "FR · PDF" },
+    es: { file: "assets/CV_Jerry_Anderson_El_Gendy_EN.pdf", name: "CV_Jerry_Anderson_El_Gendy_EN.pdf", badge: "EN · PDF" },
+  };
+
   function applyLanguage(lang, resetChat = false) {
     if (!I18N[lang]) lang = "en";
     currentLang = lang;
@@ -459,6 +467,20 @@
     });
     $$(".lang-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.lang === lang);
+    });
+
+    // Update CV download links dynamically based on selected language
+    const cvInfo = CV_FILES[lang] || CV_FILES.en;
+    ["#heroCvBtn", "#contactCvBtn"].forEach((sel) => {
+      const a = $(sel);
+      if (a) {
+        a.setAttribute("href", cvInfo.file);
+        a.setAttribute("download", cvInfo.name);
+      }
+    });
+    ["#heroCvLangBadge", "#contactCvLangBadge"].forEach((sel) => {
+      const b = $(sel);
+      if (b) b.textContent = cvInfo.badge;
     });
 
     if (resetChat && typeof initChat === "function") {
@@ -736,6 +758,7 @@
   <span class="c-cyan">skills</span>       78+ technical skills
   <span class="c-cyan">education</span>    academic &amp; bootcamp background
   <span class="c-cyan">certs</span>        licenses &amp; certifications
+  <span class="c-cyan">cv</span>           download CV in EN, IT, DE, FR (PDF)
   <span class="c-cyan">languages</span>    spoken languages
   <span class="c-cyan">contact</span>      email, phone, LinkedIn &amp; GitHub
   <span class="c-cyan">github</span>       open GitHub profile
@@ -795,6 +818,12 @@ and enterprise ETL pipelines (Azure Data Factory, SQL Server) for complex bankin
 ✔ Secure .NET Development with OWASP Top 10 — Microsoft Learn <span class="c-muted">(2026)</span>
 ✔ Alteryx Designer Core — Alteryx <span class="c-muted">(08/2025 – 08/2027 · Credly)</span>
 ✔ CDI Implementation Practitioner — Informatica <span class="c-muted">(03/2025)</span>`,
+
+    cv: () => `<span class="c-violet">Download Jerry's verified CV (PDF):</span>
+🇬🇧 English   <a href="assets/CV_Jerry_Anderson_El_Gendy_EN.pdf" download="CV_Jerry_Anderson_El_Gendy_EN.pdf">CV_Jerry_Anderson_El_Gendy_EN.pdf</a>
+🇮🇹 Italiano  <a href="assets/CV_Jerry_Anderson_El_Gendy_IT.pdf" download="CV_Jerry_Anderson_El_Gendy_IT.pdf">CV_Jerry_Anderson_El_Gendy_IT.pdf</a>
+🇩🇪 Deutsch   <a href="assets/CV_Jerry_Anderson_El_Gendy_DE.pdf" download="CV_Jerry_Anderson_El_Gendy_DE.pdf">CV_Jerry_Anderson_El_Gendy_DE.pdf</a>
+🇫🇷 Français  <a href="assets/CV_Jerry_Anderson_El_Gendy_FR.pdf" download="CV_Jerry_Anderson_El_Gendy_FR.pdf">CV_Jerry_Anderson_El_Gendy_FR.pdf</a>`,
 
     languages: () => `🇮🇹 Italian   native
 🇬🇧 English   professional
@@ -939,6 +968,16 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
       </ul>`
     },
     {
+      keys: ["cv", "resume", "curriculum", "pdf", "download", "scarica", "lebenslauf"],
+      trace: "tool.get_cv_downloads()",
+      reply: `<ul>
+        <li>🇬🇧 <strong>English CV (PDF):</strong> <a href="assets/CV_Jerry_Anderson_El_Gendy_EN.pdf" download="CV_Jerry_Anderson_El_Gendy_EN.pdf">Download CV_Jerry_Anderson_El_Gendy_EN.pdf</a></li>
+        <li>🇮🇹 <strong>Italian CV (PDF):</strong> <a href="assets/CV_Jerry_Anderson_El_Gendy_IT.pdf" download="CV_Jerry_Anderson_El_Gendy_IT.pdf">Download CV_Jerry_Anderson_El_Gendy_IT.pdf</a></li>
+        <li>🇩🇪 <strong>German CV (PDF):</strong> <a href="assets/CV_Jerry_Anderson_El_Gendy_DE.pdf" download="CV_Jerry_Anderson_El_Gendy_DE.pdf">Download CV_Jerry_Anderson_El_Gendy_DE.pdf</a></li>
+        <li>🇫🇷 <strong>French CV (PDF):</strong> <a href="assets/CV_Jerry_Anderson_El_Gendy_FR.pdf" download="CV_Jerry_Anderson_El_Gendy_FR.pdf">Download CV_Jerry_Anderson_El_Gendy_FR.pdf</a></li>
+      </ul>`
+    },
+    {
       keys: ["contact", "contatt", "kontakt", "contacto", "email", "mail", "phone", "telefono", "linkedin", "github", "repo", "code", "hire", "assum"],
       trace: "tool.get_contact_card()",
       reply: `<ul>
@@ -986,8 +1025,198 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
     de: { q_btn_book: "📅 Interview buchen", b_intro: "Super! Fülle das Formular aus: Jerry erhält deine Anfrage per Gmail und bestätigt sie persönlich. ✅", b_title: "Interview-Anfrage", b_name: "Vollständiger Name *", b_company: "Unternehmen", b_email: "Deine E-Mail *", b_date: "Datum (Mo–Fr) *", b_slot: "Zeitfenster (MEZ)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 Stunde)", b_s4: "Andere Zeit (nach Absprache)", b_custom: "Vorgeschlagene Zeit (z. B. Di 17:30)", b_notes: "Position / Notizen", b_submit: "Anfrage senden", b_sending: "Wird gesendet…", b_err_fields: "Bitte Name, gültige E-Mail und Datum angeben.", b_err_weekend: "Bitte einen Werktag wählen (Montag–Freitag).", b_err_rate: "Zu viele Anfragen. Bitte später erneut versuchen.", b_err: "Etwas ist schiefgelaufen. Schreib Jerry direkt an elgendyjerry@gmail.com.", b_ok: "✅ <strong>Anfrage gesendet!</strong><br>Jerry hat deine Interview-Anfrage für <strong>{date}</strong> · <strong>{slot}</strong> per Gmail erhalten. Nach seiner Freigabe erhältst du eine Bestätigung und eine Google-Calendar-Einladung an <strong>{email}</strong>." },
     fr: { q_btn_book: "📅 Réserver un entretien", b_intro: "Parfait ! Remplissez le formulaire : Jerry recevra votre demande sur Gmail et la confirmera personnellement. ✅", b_title: "Demande d'entretien", b_name: "Nom complet *", b_company: "Entreprise", b_email: "Votre e-mail *", b_date: "Date (lun–ven) *", b_slot: "Créneau (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 heure)", b_s4: "Autre horaire (à convenir)", b_custom: "Horaire proposé (ex. mar 17:30)", b_notes: "Poste / notes", b_submit: "Envoyer la demande", b_sending: "Envoi…", b_err_fields: "Merci d'indiquer nom, e-mail valide et date.", b_err_weekend: "Choisissez un jour ouvré (lundi–vendredi).", b_err_rate: "Trop de demandes. Réessayez plus tard.", b_err: "Une erreur est survenue. Écrivez directement à elgendyjerry@gmail.com.", b_ok: "✅ <strong>Demande envoyée !</strong><br>Jerry a reçu votre demande d'entretien sur Gmail pour le <strong>{date}</strong> · <strong>{slot}</strong>. Dès validation, vous recevrez une confirmation et une invitation Google Agenda à <strong>{email}</strong>." },
     es: { q_btn_book: "📅 Reservar entrevista", b_intro: "¡Perfecto! Rellena el formulario: Jerry recibirá tu solicitud en Gmail y la confirmará personalmente. ✅", b_title: "Solicitud de entrevista", b_name: "Nombre completo *", b_company: "Empresa", b_email: "Tu email *", b_date: "Fecha (lun–vie) *", b_slot: "Franja horaria (CET)", b_s1: "12:00 – 12:30", b_s2: "12:30 – 13:00", b_s3: "12:00 – 13:00 (1 hora)", b_s4: "Otro horario (a acordar)", b_custom: "Horario propuesto (ej. mar 17:30)", b_notes: "Puesto / notas", b_submit: "Enviar solicitud", b_sending: "Enviando…", b_err_fields: "Indica nombre, un email válido y una fecha.", b_err_weekend: "Elige un día laborable (lunes–viernes).", b_err_rate: "Demasiadas solicitudes. Inténtalo más tarde.", b_err: "Algo salió mal. Puedes escribir a elgendyjerry@gmail.com.", b_ok: "✅ <strong>¡Solicitud enviada!</strong><br>Jerry ha recibido en Gmail tu solicitud de entrevista para el <strong>{date}</strong> · <strong>{slot}</strong>. Cuando la apruebe recibirás confirmación e invitación de Google Calendar en <strong>{email}</strong>." },
+    chat_Input_dummy: ""
   };
   Object.keys(BOOK_I18N).forEach((l) => Object.assign(I18N[l], BOOK_I18N[l]));
+
+  /* ---------------------------------------------------------
+     8c. Multilingual Labels for CV Download, Case Studies & JD Matcher
+     --------------------------------------------------------- */
+  const EXTRA_I18N = {
+    en: {
+      btn_download_cv: "Download CV",
+      btn_case_study: "View Case Study & Architecture",
+      q_btn_jd: "🎯 JD Fit Check",
+      jd_intro: "Paste a <strong>Job Description</strong> below (or pick a sample role): I'll evaluate how Jerry's AI &amp; Data Engineering profile matches your requirements using Gemini AI. 🎯",
+      jd_head: "🎯 Job Description Fit Matcher",
+      jd_sample_ai: "Sample: AI / RAG Engineer",
+      jd_sample_data: "Sample: Azure Data Engineer",
+      jd_placeholder: "Paste the job description or required skills here (e.g. Python, LangChain, RAG, Azure Data Factory, SQL Server)…",
+      jd_submit: "Analyze Match with Gemini AI →",
+      jd_analyzing: "Evaluating fit with Gemini…",
+      jd_err_empty: "Please paste a job description or click a sample role above.",
+    },
+    it: {
+      btn_download_cv: "Scarica CV",
+      btn_case_study: "Vedi Case Study & Architettura",
+      q_btn_jd: "🎯 Valuta Job Description",
+      jd_intro: "Incolla qui sotto una <strong>Job Description</strong> (o scegli un ruolo d'esempio): analizzerò con Gemini AI quanto il profilo AI &amp; Data Engineering di Jerry è in linea con i requisiti. 🎯",
+      jd_head: "🎯 Job Description Fit Matcher",
+      jd_sample_ai: "Esempio: AI / RAG Engineer",
+      jd_sample_data: "Esempio: Azure Data Engineer",
+      jd_placeholder: "Incolla qui l'annuncio di lavoro o i requisiti richiesti (es. Python, LangChain, RAG, Azure Data Factory, SQL Server)…",
+      jd_submit: "Analizza compatibilità con Gemini AI →",
+      jd_analyzing: "Analisi compatibilità in corso…",
+      jd_err_empty: "Incolla una job description oppure clicca uno degli esempi qui sopra.",
+    },
+    de: {
+      btn_download_cv: "CV herunterladen",
+      btn_case_study: "Case Study & Architektur ansehen",
+      q_btn_jd: "🎯 JD-Fit-Check",
+      jd_intro: "Füge unten eine <strong>Stellenbeschreibung (Job Description)</strong> ein (oder wähle ein Beispiel): Ich bewerte mit Gemini AI, wie gut Jerrys AI- &amp; Data-Engineering-Profil passt. 🎯",
+      jd_head: "🎯 Job Description Fit Matcher",
+      jd_sample_ai: "Beispiel: AI / RAG Engineer",
+      jd_sample_data: "Beispiel: Azure Data Engineer",
+      jd_placeholder: "Stellenbeschreibung oder Anforderungen hier einfügen (z. B. Python, LangChain, RAG, Azure Data Factory, SQL Server)…",
+      jd_submit: "Match mit Gemini AI analysieren →",
+      jd_analyzing: "Analyse läuft…",
+      jd_err_empty: "Bitte eine Stellenbeschreibung einfügen oder oben ein Beispiel wählen.",
+    },
+    fr: {
+      btn_download_cv: "Télécharger CV",
+      btn_case_study: "Voir Case Study & Architecture",
+      q_btn_jd: "🎯 Compatibilité Offre (JD)",
+      jd_intro: "Collez une <strong>fiche de poste (Job Description)</strong> ci-dessous (ou choisissez un exemple) : j'évaluerai avec Gemini AI l'adéquation du profil AI &amp; Data Engineering de Jerry. 🎯",
+      jd_head: "🎯 Job Description Fit Matcher",
+      jd_sample_ai: "Exemple : AI / RAG Engineer",
+      jd_sample_data: "Exemple : Azure Data Engineer",
+      jd_placeholder: "Collez l'offre d'emploi ou les compétences requises ici (ex. Python, LangChain, RAG, Azure Data Factory, SQL Server)…",
+      jd_submit: "Analyser la compatibilité avec Gemini AI →",
+      jd_analyzing: "Analyse en cours…",
+      jd_err_empty: "Veuillez coller une offre d'emploi ou cliquer sur un exemple ci-dessus.",
+    },
+    es: {
+      btn_download_cv: "Descargar CV",
+      btn_case_study: "Ver Case Study y Arquitectura",
+      q_btn_jd: "🎯 Evaluar Vacante (JD)",
+      jd_intro: "Pega una <strong>descripción de puesto (Job Description)</strong> abajo (o elige un ejemplo): evaluaré con Gemini AI cómo encaja el perfil de AI &amp; Data Engineering de Jerry. 🎯",
+      jd_head: "🎯 Job Description Fit Matcher",
+      jd_sample_ai: "Ejemplo: AI / RAG Engineer",
+      jd_sample_data: "Ejemplo: Azure Data Engineer",
+      jd_placeholder: "Pega la oferta de empleo o requisitos aquí (ej. Python, LangChain, RAG, Azure Data Factory, SQL Server)…",
+      jd_submit: "Analizar compatibilidad con Gemini AI →",
+      jd_analyzing: "Analizando compatibilidad…",
+      jd_err_empty: "Por favor pega una descripción de puesto o elige un ejemplo arriba.",
+    },
+  };
+  Object.keys(EXTRA_I18N).forEach((l) => Object.assign(I18N[l], EXTRA_I18N[l]));
+
+  const SAMPLE_JDS = {
+    ai: "We are looking for an AI Engineer experienced in Generative AI, Autonomous Agents (LangChain, CrewAI, MCP), Advanced RAG architectures, Vector Databases (Qdrant / Azure AI Search), Python, FastAPI, Pydantic, and Azure OpenAI to automate complex enterprise and financial workflows.",
+    data: "Seeking a Cloud Data Engineer with proven experience in Azure Data Factory (ADF) ETL pipelines, SQL Server query optimization, data migration from legacy systems in the banking/financial sector, Alteryx/Informatica CDI, and Python automation.",
+  };
+
+  const JD_INTENT = /\b(jd\s*match|fit\s*check|job\s*description|match\s*job|evaluate\s*fit|valuta\s*annuncio|compatibilit|stellenbeschreibung|fiche\s*de\s*poste)\b/i;
+
+  function evaluateLocalJdFit(jdText) {
+    const q = jdText.toLowerCase();
+    const matched = [];
+    const checks = [
+      { rx: /python|uv|fastapi|pydantic/, label: "Python (uv), FastAPI & Pydantic" },
+      { rx: /agent|langchain|crewai|mcp|tool|function\s*calling/, label: "Autonomous Agents (LangChain, CrewAI, MCP, Tool Use)" },
+      { rx: /rag|qdrant|vector|ai\s*search|semantic/, label: "Enterprise RAG & Vector DBs (Qdrant, Azure AI Search)" },
+      { rx: /openai|azure\s*ai|llm|genai|generative|prompt/, label: "Azure OpenAI, Azure AI Foundry & LLMOps" },
+      { rx: /etl|data\s*factory|adf|pipeline|migrat|alteryx|cdi/, label: "Cloud ETL Pipelines (Azure Data Factory, Alteryx, Informatica CDI)" },
+      { rx: /sql|database|oracle|mongo|query/, label: "SQL Server Optimization (-20% query time), Oracle PL/SQL & MongoDB" },
+      { rx: /bank|financ|insur|enterprise|rpa|autom/, label: "Banking & Insurance Intelligent Automation (Mediobanca, Solution Bank)" },
+      { rx: /docker|container|apim|cloud|git|agile|scrum|java|spring/, label: "Azure Container Apps, APIM, Docker, Java/Spring Boot & Agile" },
+    ];
+    for (const c of checks) if (c.rx.test(q)) matched.push(c.label);
+    if (!matched.length) matched.push("AI Engineering (Agents, RAG, Azure OpenAI)", "Enterprise Data Engineering (ADF, SQL Server)");
+    const score = Math.min(98, 84 + matched.length * 2);
+    const cvInfo = CV_FILES[currentLang] || CV_FILES.en;
+    return `
+      <p><strong>🎯 Match Score &amp; Verdict: ${score}% Strong Fit</strong> — Jerry combines production <strong>Agentic AI / RAG</strong> engineering at <strong>Deda AI</strong> with 2+ years of enterprise <strong>Cloud ETL &amp; SQL</strong> impact at <strong>Dedagroup</strong>.</p>
+      <ul>
+        ${matched.slice(0, 4).map((m) => `<li>✅ <strong>Matched Competency:</strong> ${m}</li>`).join("")}
+        <li>📊 <strong>Verified Impact:</strong> <strong>-30%</strong> ETL processing time (Mediobanca), <strong>+25%</strong> pipeline efficiency, <strong>700+ page</strong> Agentic PDF mapper, and multi-tenant Azure RAG.</li>
+      </ul>
+      <p style="margin-top:6px">📄 <a href="${cvInfo.file}" download="${cvInfo.name}">Download Jerry's CV (${cvInfo.badge})</a> · 📩 <a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a></p>
+    `;
+  }
+
+  async function runJdMatch(jdText, cardWrap) {
+    const clean = jdText.trim();
+    if (!clean || busy) return;
+    busy = true;
+    if (cardWrap) cardWrap.remove();
+    addUserMessage(`🎯 [JD Fit Check] ${clean.slice(0, 140)}${clean.length > 140 ? "…" : ""}`);
+
+    const typing = document.createElement("div");
+    typing.className = "chat-msg bot";
+    typing.innerHTML = `<div class="chat-typing"><i></i><i></i><i></i></div>`;
+    chatMessages.appendChild(typing);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    try {
+      const resp = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: clean,
+          mode: "jd_match",
+          lang: currentLang,
+        }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.reply) {
+          typing.remove();
+          const cvInfo = CV_FILES[currentLang] || CV_FILES.en;
+          const extraFooter = `<p style="margin-top:8px">📄 <a href="${cvInfo.file}" download="${cvInfo.name}"><strong>Download CV (${cvInfo.badge})</strong></a> · 📩 <a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a></p>`;
+          addBotMessage(
+            formatMarkdownToHTML(data.reply) + extraFooter,
+            data.trace || "gemini.tool_call('evaluate_jd_fit', candidate='Jerry_El_Gendy')"
+          );
+          busy = false;
+          return;
+        }
+      }
+    } catch {}
+
+    await sleep(prefersReduced ? 80 : 420);
+    typing.remove();
+    addBotMessage(evaluateLocalJdFit(clean), "agent.tool_call('evaluate_jd_fit', mode='local_rag')");
+    busy = false;
+  }
+
+  function showJdMatcherCard() {
+    const t = I18N[currentLang] || I18N.en;
+    addBotMessage(t.jd_intro, "agent.tool_select('jd_fit_matcher')");
+    const wrap = document.createElement("div");
+    wrap.className = "chat-msg bot booking-msg";
+    wrap.innerHTML = `
+      <form class="jd-card" novalidate>
+        <div class="jd-head mono">${escapeHTML(t.jd_head)}</div>
+        <div class="jd-presets">
+          <button type="button" data-sample="ai">⚡ ${escapeHTML(t.jd_sample_ai)}</button>
+          <button type="button" data-sample="data">☁️ ${escapeHTML(t.jd_sample_data)}</button>
+        </div>
+        <textarea name="jd" rows="4" maxlength="2000" placeholder="${escapeHTML(t.jd_placeholder)}"></textarea>
+        <p class="booking-error" role="alert"></p>
+        <button type="submit" class="booking-submit">${escapeHTML(t.jd_submit)}</button>
+      </form>`;
+    chatMessages.appendChild(wrap);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const form = $("form", wrap);
+    const ta = form.elements.jd;
+    const errEl = $(".booking-error", form);
+    $$("[data-sample]", form).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        ta.value = SAMPLE_JDS[btn.dataset.sample] || SAMPLE_JDS.ai;
+        errEl.textContent = "";
+      });
+    });
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!ta.value.trim()) {
+        errEl.textContent = t.jd_err_empty;
+        return;
+      }
+      runJdMatch(ta.value, wrap);
+    });
+  }
 
   const BOOK_INTENT = /\b(book|booking|schedule|interview|meeting|appointment|call\s+with|colloquio|prenot|appuntament|fissare|incontro|termin|vorstellungsgespr|gespräch|entretien|rendez-vous|réserver|entrevista|reservar|cita|reunión)\b/i;
 
@@ -1099,6 +1328,11 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
       showBookingCard();
       return;
     }
+    if (JD_INTENT.test(clean)) {
+      addUserMessage(clean);
+      showJdMatcherCard();
+      return;
+    }
     busy = true;
     addUserMessage(clean);
 
@@ -1169,6 +1403,10 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
       b.addEventListener("click", () => { addUserMessage(b.textContent); showBookingCard(); });
       return;
     }
+    if (b.id === "quickJdMatch") {
+      b.addEventListener("click", () => { addUserMessage(b.textContent); showJdMatcherCard(); });
+      return;
+    }
     b.addEventListener("click", () => handleQuestion(b.getAttribute("data-q")));
   });
   $$(".chat-messages").forEach((el) => {
@@ -1176,6 +1414,246 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
       const a = e.target.closest("a[href^='#']");
       if (a && innerWidth < 600) toggleChat(false);
     });
+  });
+
+  /* ---------------------------------------------------------
+     8d. Interactive Project Case Studies Modal
+     --------------------------------------------------------- */
+  const CASE_UI = {
+    en: { h_prob: "01 // Challenge & Context", h_arch: "02 // Architecture & Agent Workflow", h_dec: "03 // Key Engineering Decisions", h_out: "04 // Validated Output Schema (Sample)" },
+    it: { h_prob: "01 // Sfida & Contesto Enterprise", h_arch: "02 // Architettura & Flusso Agentico", h_dec: "03 // Scelte Ingegneristiche Chiave", h_out: "04 // Esempio di Output Strutturato (JSON)" },
+    de: { h_prob: "01 // Herausforderung & Kontext", h_arch: "02 // Architektur & Agenten-Workflow", h_dec: "03 // Wichtige Engineering-Entscheidungen", h_out: "04 // Validiertes Output-Schema (Beispiel)" },
+    fr: { h_prob: "01 // Défi & Contexte Entreprise", h_arch: "02 // Architecture & Workflow Agentique", h_dec: "03 // Décisions d'Ingénierie Clés", h_out: "04 // Schéma de Sortie Validé (Exemple)" },
+    es: { h_prob: "01 // Reto y Contexto Empresarial", h_arch: "02 // Arquitectura y Flujo Agéntico", h_dec: "03 // Decisiones Clave de Ingeniería", h_out: "04 // Esquema de Salida Validado (Ejemplo)" },
+  };
+
+  const CASE_STUDIES = {
+    pdf: {
+      type: "// case study 01 · autonomous & multi-agent system",
+      title: "Agentic PDF Intelligence System",
+      kpis: [
+        { val: "700+", label: { en: "Pages per technical manual", it: "Pagine per manuale tecnico", de: "Seiten pro Handbuch", fr: "Pages par manuel technique", es: "Páginas por manual técnico" } },
+        { val: "100%", label: { en: "Pydantic schema validation", it: "Validazione schema Pydantic", de: "Pydantic-Schemavalidierung", fr: "Validation de schéma Pydantic", es: "Validación de esquema Pydantic" } },
+        { val: "Qdrant", label: { en: "Hybrid semantic vector index", it: "Indice vettoriale semantico", de: "Semantischer Vektor-Index", fr: "Index vectoriel sémantique", es: "Índice vectorial semántico" } },
+      ],
+      problem: {
+        en: "Enterprise banking & technical specifications often span 700+ pages of dense tables, record layouts, and cross-references. Naive chunking or single-prompt extraction fails due to context bloat, lost table headers, and hallucinated field codes.",
+        it: "Le specifiche tecniche e bancarie enterprise superano spesso le 700 pagine di tabelle, tracciati record e riferimenti incrociati. Il chunking tradizionale o un singolo prompt falliscono per perdita delle intestazioni e allucinazioni sui codici campo.",
+        de: "Technische Spezifikationen im Bankenumfeld umfassen oft über 700 Seiten mit komplexen Tabellen. Klassisches Chunking scheitert an Kontextverlust und halluzinierten Felonamen.",
+        fr: "Les spécifications techniques bancaires dépassent souvent 700 pages de tableaux complexes. Le découpage naïf échoue à cause de la perte de contexte et d'en-têtes.",
+        es: "Las especificaciones técnicas bancarias suelen superar las 700 páginas de tablas complejas. El chunking tradicional falla por pérdida de encabezados y contexto.",
+      },
+      arch: [
+        "1. TOC & Structure Planner Agent → parses document hierarchy and identifies target page ranges before reading full pages.",
+        "2. Tool-Use Navigation & Qdrant Indexing → selective page parsing + semantic vector indexing on Qdrant for cross-section lookups.",
+        "3. Multi-Agent Extraction Loop (LangChain / CrewAI) → specialized extractor agent calls table-parsing tools via Function Calling.",
+        "4. Strict Pydantic Guardrail & FastAPI Service → validates every extracted record against typed schemas with automatic self-correction retry on validation error.",
+      ],
+      decisions: [
+        "Chose hierarchical Agentic Navigation (TOC-first tool calling) over brute-force RAG to cut token usage and preserve table boundaries.",
+        "Enforced strict Pydantic v2 models so downstream banking ETL pipelines receive deterministic, zero-error JSON contracts.",
+        "Packaged with Python (uv) and exposed via FastAPI async endpoints for seamless microservice integration.",
+      ],
+      sample: `{
+  "document_id": "SPEC_BANK_TRACCIATI_v4.pdf",
+  "total_pages": 742,
+  "agent_trace": ["read_toc()", "qdrant.search('Section 4.2')", "extract_tables(211, 236)"],
+  "extracted_section": "4.2 Record Layout",
+  "records_validated": 126,
+  "pydantic_schema": "FieldSpecV2",
+  "sample_field": {
+    "code": "TR_IMPORTO_NETTO",
+    "type": "DECIMAL(18,2)",
+    "mandatory": true,
+    "source_page": 214
+  }
+}`
+    },
+
+    cai: {
+      type: "// case study 02 · multimodal document intelligence",
+      title: "CAI Claims Analysis Pipeline",
+      kpis: [
+        { val: "4-in-1", label: { en: "Text, checkboxes, sketch & signatures", it: "Testo, caselle, schema e firme", de: "Text, Checkboxen, Skizze & Signatur", fr: "Texte, cases, croquis & signatures", es: "Texto, casillas, croquis y firmas" } },
+        { val: "Azure AI", label: { en: "Content Understanding + OpenAI", it: "Content Understanding + OpenAI", de: "Content Understanding + OpenAI", fr: "Content Understanding + OpenAI", es: "Content Understanding + OpenAI" } },
+        { val: "JSON", label: { en: "Ready for RPA & claims triage", it: "Pronto per RPA e istruttoria", de: "Bereit für RPA & Schadenprüfung", fr: "Prêt pour RPA & gestion sinistres", es: "Listo para RPA y gestión de siniestros" } },
+      ],
+      problem: {
+        en: "Italian CAI (Constatazione Amichevole d'Incidente) car claim forms combine handwritten fields, 17 circumstance checkboxes for two vehicles (A & B), a hand-drawn collision diagram, and bottom signatures—making traditional OCR brittle.",
+        it: "I moduli CAI (Constatazione Amichevole d'Incidente) combinano scrittura a mano, 17 caselle di circostanza per due veicoli (A e B), uno schema grafico dell'urto e le firme in calce, rendendo gli OCR tradizionali inaffidabili.",
+        de: "CAI-Unfallberichte kombinieren Handschrift, 17 Ankreuzfelder für zwei Fahrzeuge, eine Unfallskizze und Unterschriften – klassisches OCR scheitert hier.",
+        fr: "Les constats amiables CAI combinent écriture manuscrite, 17 cases de circonstances, un croquis d'impact et des signatures, mettant en échec l'OCR classique.",
+        es: "Los partes amistosos CAI combinan escritura manual, 17 casillas de circunstancias, un croquis del choque y firmas, donde el OCR clásico falla.",
+      },
+      arch: [
+        "1. Pre-processing (PyMuPDF & Pillow) → deskewing, resolution normalization, and region cropping (header, vehicles A/B, central checkboxes, sketch box, signature zones).",
+        "2. Azure Content Understanding → structured field extraction & checkbox state detection for Vehicle A and Vehicle B.",
+        "3. Vision + Signature Verification → detects presence/absence of both drivers' signatures to flag incomplete claims immediately.",
+        "4. Azure OpenAI Synthesis → reconciles ticked circumstance boxes with the visual accident diagram to produce a coherent JSON accident narrative.",
+      ],
+      decisions: [
+        "Combined layout-aware Azure Content Understanding with targeted Pillow region crops for high accuracy on checkboxes and signatures.",
+        "Cross-checked checkbox codes against the visual sketch analysis to detect contradictions and output a confidence score.",
+        "Designed output JSON to feed directly into downstream Intelligent Automation / RPA workflows.",
+      ],
+      sample: `{
+  "claim_type": "CAI_MODULO_BLU",
+  "vehicles": {
+    "vehicle_A": { "plate": "FZ981**", "checked_boxes": [8] },
+    "vehicle_B": { "plate": "GK412**", "checked_boxes": [13] }
+  },
+  "signatures": { "driver_A": true, "driver_B": true, "valid_joint_claim": true },
+  "diagram_analysis": "Rear-end collision along same lane",
+  "dynamic_summary_it": "Il veicolo B tamponava il veicolo A in fase di arresto in colonna.",
+  "rpa_routing": "FAST_TRACK_SETTLEMENT"
+}`
+    },
+
+    rag: {
+      type: "// case study 03 · cloud-native enterprise RAG",
+      title: "Multi-tenant RAG Chatbot on Azure",
+      kpis: [
+        { val: "Multi-Tenant", label: { en: "Strict tenant data isolation", it: "Isolamento dati per singolo tenant", de: "Strikte Mandantentrennung", fr: "Isolation stricte par tenant", es: "Aislamiento estricto por tenant" } },
+        { val: "Zero-Key", label: { en: "Managed Identity security", it: "Sicurezza con Managed Identity", de: "Managed-Identity-Sicherheit", fr: "Sécurité Managed Identity", es: "Seguridad con Managed Identity" } },
+        { val: "< 1s", label: { en: "Hybrid search + grounded answer", it: "Ricerca ibrida + risposta citata", de: "Hybride Suche + Antwort", fr: "Recherche hybride + réponse", es: "Búsqueda híbrida + respuesta" } },
+      ],
+      problem: {
+        en: "Enterprise organizations need a single scalable RAG platform capable of serving multiple business units or clients (tenants) via an embeddable web widget, while guaranteeing zero cross-tenant data leakage and automated knowledge base synchronization.",
+        it: "Le realtà enterprise necessitano di un'unica piattaforma RAG scalabile capace di servire più clienti o business unit (multi-tenant) tramite widget web, garantendo zero data leakage tra tenant e aggiornamento automatico delle fonti.",
+        de: "Unternehmen benötigen eine skalierbare RAG-Plattform für mehrere Mandanten ohne Datenlecks zwischen Tenants und mit automatischer Quellenaktualisierung.",
+        fr: "Les entreprises ont besoin d'une plateforme RAG multi-tenant évolutive garantissant zéro fuite de données entre clients et une mise à jour continue des sources.",
+        es: "Las empresas necesitan una plataforma RAG multi-tenant escalable que garantice cero fugas de datos entre clientes y actualización automática de fuentes.",
+      },
+      arch: [
+        "1. Ingestion & Sync Function (Azure Functions) → event-driven pipeline that chunks, embeds, and updates documents in Azure AI Search with tenant metadata ACLs.",
+        "2. API Gateway & Access Control (Azure APIM) → validates tokens, enforces rate limits, and injects verified tenant context headers.",
+        "3. Agent Runtime (Azure Container Apps) → hosts the LLM agent equipped with hybrid search tools (vector + BM25 keyword + semantic reranker).",
+        "4. Passwordless Security (Managed Identity) → service-to-service authentication across Container Apps, AI Search, and Azure OpenAI without static secrets.",
+      ],
+      decisions: [
+        "Enforced tenant filtering at the Azure AI Search query level via APIM-verified headers so an agent cannot access another tenant's chunks.",
+        "Adopted Azure Container Apps for scale-to-zero cost efficiency and seamless horizontal scaling under burst traffic.",
+        "Used Managed Identities across all Azure resources to eliminate secret rotation overhead and comply with enterprise security governance.",
+      ],
+      sample: `{
+  "request_id": "req_99481a",
+  "tenant_id": "bank_division_01",
+  "auth_mode": "Azure_Managed_Identity",
+  "retrieval": {
+    "engine": "Azure_AI_Search_Hybrid",
+    "filter": "tenant_id eq 'bank_division_01'",
+    "top_k": 5,
+    "reranker_score": 0.91
+  },
+  "response": {
+    "grounded": true,
+    "citations": ["Policy_KYC_2026.pdf#p14", "Operational_Manual.pdf#p88"]
+  }
+}`
+    },
+
+    whatscity: {
+      type: "// case study 04 · smart city & AI innovation (A2A hackathon)",
+      title: "WhatsCity — Smart City & AI App",
+      kpis: [
+        { val: "A2A Jury", label: { en: "Pitched to A2A executives", it: "Presentato ai vertici A2A", de: "Vor A2A-Vorstand präsentiert", fr: "Présenté aux dirigeants A2A", es: "Presentado ante directivos de A2A" } },
+        { val: "AI + IoT", label: { en: "Urban data & civic reports", it: "Dati urbani e segnalazioni civiche", de: "Urbane Daten & IoT", fr: "Données urbaines & IoT", es: "Datos urbanos e IoT" } },
+        { val: "Civic UX", label: { en: "Gamified sustainability rewards", it: "Gamification e sostenibilità", de: "Gamifizierte Nachhaltigkeit", fr: "Gamification & durabilité", es: "Gamificación y sostenibilidad" } },
+      ],
+      problem: {
+        en: "Developed during the A2A Re-GenerAction Hackathon: urban communication between citizens, local businesses, and public administration is fragmented, resulting in low civic engagement and slow response to environmental/infrastructure issues.",
+        it: "Sviluppato durante l'hackathon Re-GenerAction di A2A: la comunicazione tra cittadini, imprese e Pubblica Amministrazione è frammentata, con basso coinvolgimento civico e scarsa valorizzazione dei comportamenti sostenibili.",
+        de: "Entwickelt beim A2A Re-GenerAction Hackathon: Die Kommunikation zwischen Bürgern, Unternehmen und Verwaltung ist fragmentiert.",
+        fr: "Développé lors du hackathon A2A Re-GenerAction : la communication entre citoyens, entreprises et administration publique est fragmentée.",
+        es: "Desarrollado en el hackathon Re-GenerAction de A2A: la comunicación entre ciudadanos, empresas y administración pública está fragmentada.",
+      },
+      arch: [
+        "1. Citizen & IoT Input Layer → mobile interface for geolocated civic reports combined with urban environmental sensor feeds.",
+        "2. AI Triage & Clustering Engine → classifies, deduplicates, and prioritizes reports by urgency and sustainability impact.",
+        "3. Gamification & Reward Loop → awards verified green points to citizens for sustainable actions, redeemable with local partner businesses.",
+        "4. Public Administration Dashboard → real-time urban pulse map presented to A2A leadership during the final executive pitch.",
+      ],
+      decisions: [
+        "Combined AI report classification with gamification to turn passive urban reporting into an active, rewarded community loop.",
+        "Co-designed in a cross-functional team uniting software/AI engineering, sustainability strategy, and product communication.",
+        "Delivered a live executive pitch in front of A2A's jury, translating technical AI + IoT concepts into clear civic and business value.",
+      ],
+      sample: `{
+  "hackathon": "A2A Re-GenerAction",
+  "project": "WhatsCity",
+  "modules": ["AI_Civic_Triage", "IoT_Urban_Telemetry", "Green_Gamification_Engine"],
+  "stakeholders": ["Citizens", "Local_Businesses", "Public_Administration"],
+  "sample_event": {
+    "type": "URBAN_SUSTAINABILITY_ACTION",
+    "ai_priority": "HIGH",
+    "citizen_reward_points": 150,
+    "status": "ROUTED_TO_MUNICIPAL_OPS"
+  }
+}`
+    },
+  };
+
+  const caseModal = $("#caseModal");
+  const caseModalType = $("#caseModalType");
+  const caseModalTitle = $("#caseModalTitle");
+  const caseModalBody = $("#caseModalBody");
+  const caseModalClose = $("#caseModalClose");
+  const caseBackdrop = $("#caseBackdrop");
+
+  function openCaseStudy(key) {
+    const cs = CASE_STUDIES[key];
+    if (!cs || !caseModal) return;
+    const ui = CASE_UI[currentLang] || CASE_UI.en;
+    caseModalType.textContent = cs.type;
+    caseModalTitle.textContent = cs.title;
+    const probText = cs.problem[currentLang] || cs.problem.en;
+
+    caseModalBody.innerHTML = `
+      <div class="case-kpis">
+        ${cs.kpis.map((k) => `<div class="case-kpi"><strong>${escapeHTML(k.val)}</strong><span>${escapeHTML(k.label[currentLang] || k.label.en)}</span></div>`).join("")}
+      </div>
+      <div class="case-sec">
+        <h4>${escapeHTML(ui.h_prob)}</h4>
+        <p>${escapeHTML(probText)}</p>
+      </div>
+      <div class="case-grid-2">
+        <div class="case-sec">
+          <h4>${escapeHTML(ui.h_arch)}</h4>
+          <ul class="case-list">
+            ${cs.arch.map((a) => `<li>${escapeHTML(a)}</li>`).join("")}
+          </ul>
+        </div>
+        <div class="case-sec">
+          <h4>${escapeHTML(ui.h_dec)}</h4>
+          <ul class="case-list">
+            ${cs.decisions.map((d) => `<li>${escapeHTML(d)}</li>`).join("")}
+          </ul>
+        </div>
+      </div>
+      <div class="case-sec">
+        <h4>${escapeHTML(ui.h_out)}</h4>
+        <pre class="case-code">${escapeHTML(cs.sample)}</pre>
+      </div>
+    `;
+    caseModal.classList.add("open");
+    caseModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeCaseStudy() {
+    if (!caseModal) return;
+    caseModal.classList.remove("open");
+    caseModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  $$("[data-case]").forEach((btn) => {
+    btn.addEventListener("click", () => openCaseStudy(btn.dataset.case));
+  });
+  if (caseModalClose) caseModalClose.addEventListener("click", closeCaseStudy);
+  if (caseBackdrop) caseBackdrop.addEventListener("click", closeCaseStudy);
+  addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && caseModal && caseModal.classList.contains("open")) closeCaseStudy();
   });
 
   /* ---------------------------------------------------------

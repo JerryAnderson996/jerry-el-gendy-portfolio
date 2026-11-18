@@ -113,12 +113,16 @@ const SYSTEM_PROMPT = `You are "Jerry's AI Agent (RAG v2.0)", the official AI as
 - **Current Role:** AI Engineer @ Deda AI (Dedagroup) | Data Engineer
 - **Motto:** ENHANCE HUMAN DECISION
 - **Location:** Milan, Italy (Hybrid / Remote available)
-- **Contacts:**
+- **Contacts & Downloadable CVs (PDF):**
   - Email: elgendyjerry@gmail.com
   - Phone: +39 391 188 3405
   - LinkedIn: https://www.linkedin.com/in/jerry-el-gendy
   - GitHub: https://github.com/JerryAnderson996
   - Portfolio: https://jerry-el-gendy.vercel.app
+  - CV (English PDF): https://jerry-el-gendy.vercel.app/assets/CV_Jerry_Anderson_El_Gendy_EN.pdf
+  - CV (Italian PDF): https://jerry-el-gendy.vercel.app/assets/CV_Jerry_Anderson_El_Gendy_IT.pdf
+  - CV (German PDF): https://jerry-el-gendy.vercel.app/assets/CV_Jerry_Anderson_El_Gendy_DE.pdf
+  - CV (French PDF): https://jerry-el-gendy.vercel.app/assets/CV_Jerry_Anderson_El_Gendy_FR.pdf
 
 #### PROFESSIONAL EXPERIENCE
 1. **AI Engineer — Deda AI (Dedagroup)** | Jan 2026 – Present | Full-time · Hybrid · Milan
@@ -248,8 +252,9 @@ export default async function handler(req) {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { message = "", history = [], lang = "en" } = body || {};
-    const cleanMsg = String(message).trim().slice(0, 600);
+    const { message = "", history = [], lang = "en", mode = "" } = body || {};
+    const isJdMode = mode === "jd_match";
+    const cleanMsg = String(message).trim().slice(0, isJdMode ? 2000 : 600);
     if (!cleanMsg) {
       return new Response(JSON.stringify({ error: "Empty message" }), { status: 400, headers: securityHeaders });
     }
@@ -271,7 +276,7 @@ export default async function handler(req) {
 
     // 4. Pre-LLM Topic Relevance Guardrail (zero latency & zero tokens for general knowledge queries like "Who is Napoleon?")
     const hasHistoryContext = Array.isArray(history) && history.length > 0 && cleanMsg.split(/\s+/).length <= 5;
-    if (!isRelevantToJerry(cleanMsg) && !hasHistoryContext) {
+    if (!isJdMode && !isRelevantToJerry(cleanMsg) && !hasHistoryContext) {
       return new Response(
         JSON.stringify({
           reply: OFF_TOPIC_REPLIES[safeLang] || OFF_TOPIC_REPLIES.en,
@@ -283,7 +288,7 @@ export default async function handler(req) {
     }
 
     const contents = [];
-    if (Array.isArray(history)) {
+    if (!isJdMode && Array.isArray(history)) {
       for (const turn of history.slice(-4)) {
         if (!turn || !turn.text) continue;
         const turnText = String(turn.text).slice(0, 600);
@@ -294,13 +299,26 @@ export default async function handler(req) {
         });
       }
     }
+
+    const userPrompt = isJdMode
+      ? `[TASK: JOB DESCRIPTION FIT EVALUATION — Respond in language: ${safeLang}]
+Evaluate how **Jerry Anderson El Gendy** matches the Job Description / Role Requirements below.
+Structure your response concisely (max 160 words) as:
+- **🎯 Match Score & Verdict:** (e.g., **94% Strong Fit** + 1-sentence summary)
+- **✅ Direct Experience Mapping:** (3–4 bullet points mapping the JD requirements directly to Jerry's verified experience at **Deda AI**, **Dedagroup / Mediobanca (-30% ETL time, +25% efficiency, -20% SQL query time)**, **700+ page Agentic PDF system (LangChain/CrewAI/Qdrant/Pydantic)**, **Multi-tenant Azure RAG (AI Search/Container Apps/APIM)**, or **CAI Document Intelligence**)
+- **🚀 Why Interview Jerry:** (1 bullet on his rare dual AI + Data Engineering profile & contact info: elgendyjerry@gmail.com)
+
+Job Description to evaluate:
+"""
+${cleanMsg}
+"""`
+      : `[UI Language preference if ambiguous: ${safeLang}]
+[REMINDER: If this question is not about Jerry Anderson El Gendy, his skills/projects/career, or hiring him, DO NOT answer the question itself —not even a single sentence— and only state that you exclusively answer questions about Jerry's professional profile.]
+User question: ${cleanMsg}`;
+
     contents.push({
       role: "user",
-      parts: [{
-        text: `[UI Language preference if ambiguous: ${safeLang}]
-[REMINDER: If this question is not about Jerry Anderson El Gendy, his skills/projects/career, or hiring him, DO NOT answer the question itself —not even a single sentence— and only state that you exclusively answer questions about Jerry's professional profile.]
-User question: ${cleanMsg}`,
-      }],
+      parts: [{ text: userPrompt }],
     });
 
     const models = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
@@ -354,7 +372,9 @@ User question: ${cleanMsg}`,
     return new Response(
       JSON.stringify({
         reply: replyText,
-        trace: detectToolTrace(cleanMsg),
+        trace: isJdMode
+          ? "gemini.tool_call('evaluate_jd_fit', candidate='Jerry_El_Gendy')"
+          : detectToolTrace(cleanMsg),
         model: usedModel,
       }),
       { status: 200, headers: securityHeaders }
