@@ -757,6 +757,75 @@ code { font-family: var(--mono); background: rgba(34, 211, 238, 0.12); color: va
 }
 .jd-card textarea:focus { border-color: var(--violet); }
 
+/* Structured JD Fit Report Card */
+.jd-report {
+  display: grid; gap: 11px; padding: 14px; border-radius: 16px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(167, 139, 250, 0.38);
+  font-size: 0.83rem; line-height: 1.5; color: var(--text);
+}
+.jd-report-top {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.jd-role { font-weight: 700; font-size: 0.88rem; color: #fff; }
+.jd-verdict-sub { font-size: 0.72rem; color: var(--muted); display: block; margin-top: 2px; }
+.jd-score-pill {
+  font-family: var(--mono); font-weight: 700; font-size: 1rem;
+  padding: 5px 11px; border-radius: 10px; flex-shrink: 0;
+}
+.jd-score-pill.high { background: rgba(52, 211, 153, 0.16); color: var(--green); border: 1px solid rgba(52, 211, 153, 0.45); }
+.jd-score-pill.mid { background: rgba(251, 191, 36, 0.14); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.4); }
+.jd-score-pill.low { background: rgba(244, 114, 182, 0.14); color: var(--pink); border: 1px solid rgba(244, 114, 182, 0.4); }
+
+.jd-meter { height: 7px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.jd-meter i { display: block; height: 100%; border-radius: inherit; }
+.jd-meter i.high { background: linear-gradient(90deg, var(--cyan), var(--green)); }
+.jd-meter i.mid { background: linear-gradient(90deg, #f59e0b, var(--cyan)); }
+.jd-meter i.low { background: linear-gradient(90deg, #f43f5e, var(--pink)); }
+
+.jd-summary { color: #cbd5e1; font-size: 0.82rem; }
+.jd-sec-title {
+  font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--cyan); margin-bottom: 5px;
+}
+.jd-sec-title.warn { color: #fbbf24; }
+.jd-sec-title.violet { color: var(--violet); }
+.jd-list { list-style: none; display: grid; gap: 6px; margin: 0; padding: 0; }
+.jd-match-item {
+  padding: 7px 9px; border-radius: 9px;
+  background: rgba(52, 211, 153, 0.06); border: 1px solid rgba(52, 211, 153, 0.2);
+  font-size: 0.79rem;
+}
+.jd-match-item strong { color: #a7f3d0; display: block; font-size: 0.77rem; margin-bottom: 1px; }
+.jd-gap-item {
+  padding: 6px 9px; border-radius: 9px;
+  background: rgba(251, 191, 36, 0.06); border: 1px solid rgba(251, 191, 36, 0.22);
+  font-size: 0.78rem; color: #fde68a;
+}
+.jd-talk-item {
+  padding: 5px 9px; border-radius: 8px;
+  background: rgba(167, 139, 250, 0.08); border: 1px solid rgba(167, 139, 250, 0.22);
+  font-size: 0.78rem; color: #ddd6fe;
+}
+.jd-actions {
+  display: flex; flex-wrap: wrap; gap: 7px; padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.jd-act-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 11px; border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+  text-decoration: none !important; cursor: pointer;
+  background: rgba(34, 211, 238, 0.12); color: #a5f3fc !important;
+  border: 1px solid rgba(34, 211, 238, 0.35); font-family: var(--font);
+  transition: background 0.2s, border-color 0.2s;
+}
+.jd-act-btn:hover { background: rgba(34, 211, 238, 0.24); border-color: var(--cyan); }
+.jd-act-btn.book {
+  background: rgba(52, 211, 153, 0.14); color: #a7f3d0 !important;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.jd-act-btn.book:hover { background: rgba(52, 211, 153, 0.26); border-color: var(--green); }
+
 @media (max-width: 680px) {
   .case-kpis, .case-grid-2 { grid-template-columns: 1fr; }
   .case-header, .case-body { padding: 18px; }

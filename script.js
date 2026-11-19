@@ -1107,31 +1107,124 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
 
   const JD_INTENT = /\b(jd\s*match|fit\s*check|job\s*description|match\s*job|evaluate\s*fit|valuta\s*annuncio|compatibilit|stellenbeschreibung|fiche\s*de\s*poste)\b/i;
 
+  const JD_REPORT_LABELS = {
+    en: { matches: "✅ Verified Matches", gaps: "⚠️ Gaps & Transferable Notes", talking: "💡 Interview Talking Points", cv: "📄 Download CV", book: "📅 Book Interview" },
+    it: { matches: "✅ Requisiti Soddisfatti", gaps: "⚠️ Gap & Competenze Trasferibili", talking: "💡 Spunti per il Colloquio", cv: "📄 Scarica CV", book: "📅 Prenota Colloquio" },
+    de: { matches: "✅ Erfüllte Anforderungen", gaps: "⚠️ Lücken & Übertragbares", talking: "💡 Gesprächsthemen", cv: "📄 CV laden", book: "📅 Interview buchen" },
+    fr: { matches: "✅ Compétences Vérifiées", gaps: "⚠️ Écarts & Transférabilité", talking: "💡 Points d'Entretien", cv: "📄 Télécharger CV", book: "📅 Réserver un entretien" },
+    es: { matches: "✅ Requisitos Cumplidos", gaps: "⚠️ Brechas y Transferibilidad", talking: "💡 Temas de Entrevista", cv: "📄 Descargar CV", book: "📅 Reservar entrevista" },
+  };
+
   function evaluateLocalJdFit(jdText) {
     const q = jdText.toLowerCase();
-    const matched = [];
+    const matches = [];
+    const gaps = [];
     const checks = [
-      { rx: /python|uv|fastapi|pydantic/, label: "Python (uv), FastAPI & Pydantic" },
-      { rx: /agent|langchain|crewai|mcp|tool|function\s*calling/, label: "Autonomous Agents (LangChain, CrewAI, MCP, Tool Use)" },
-      { rx: /rag|qdrant|vector|ai\s*search|semantic/, label: "Enterprise RAG & Vector DBs (Qdrant, Azure AI Search)" },
-      { rx: /openai|azure\s*ai|llm|genai|generative|prompt/, label: "Azure OpenAI, Azure AI Foundry & LLMOps" },
-      { rx: /etl|data\s*factory|adf|pipeline|migrat|alteryx|cdi/, label: "Cloud ETL Pipelines (Azure Data Factory, Alteryx, Informatica CDI)" },
-      { rx: /sql|database|oracle|mongo|query/, label: "SQL Server Optimization (-20% query time), Oracle PL/SQL & MongoDB" },
-      { rx: /bank|financ|insur|enterprise|rpa|autom/, label: "Banking & Insurance Intelligent Automation (Mediobanca, Solution Bank)" },
-      { rx: /docker|container|apim|cloud|git|agile|scrum|java|spring/, label: "Azure Container Apps, APIM, Docker, Java/Spring Boot & Agile" },
+      { rx: /python|\buv\b|fastapi|pydantic/, req: "Python / FastAPI / Pydantic", evidence: "Core stack at Deda AI: Python (uv), FastAPI microservices, strict Pydantic v2 validation." },
+      { rx: /agent|langchain|crewai|mcp|tool|function\s*calling/, req: "Agentic AI & Multi-Agent", evidence: "Built autonomous & multi-agent workflows (LangChain, CrewAI, MCP) mapping 700+ page technical PDFs." },
+      { rx: /rag|qdrant|vector|ai\s*search|semantic/, req: "RAG & Vector Databases", evidence: "Production multi-tenant RAG on Azure AI Search + semantic vector indexing on Qdrant." },
+      { rx: /openai|azure\s*ai|llm|genai|generative|prompt/, req: "Generative AI & Azure OpenAI", evidence: "AI Engineer @ Deda AI: Azure OpenAI, Azure Content Understanding, AI Foundry & LLMOps." },
+      { rx: /etl|data\s*factory|adf|pipeline|migrat|alteryx|cdi/, req: "Cloud ETL Pipelines", evidence: "2+ yrs at Dedagroup (Mediobanca) on Azure Data Factory: -30% migration time, +25% efficiency." },
+      { rx: /sql|database|oracle|mongo|query/, req: "SQL & Database Optimization", evidence: "SQL Server maintenance & query tuning (-20% execution time), plus Oracle PL/SQL & MongoDB." },
+      { rx: /bank|financ|insur|enterprise|rpa|autom/, req: "Banking & Intelligent Automation", evidence: "LLM + RPA workflows for Solution Bank, Mediobanca data flows, and CAI insurance claims pipeline." },
+      { rx: /docker|container|apim|cloud|git|agile|scrum|java|spring/, req: "Cloud, Containers & Software Eng", evidence: "Azure Container Apps, APIM, Managed Identity, Docker, Java/Spring Boot, Git & Agile/Scrum." },
     ];
-    for (const c of checks) if (c.rx.test(q)) matched.push(c.label);
-    if (!matched.length) matched.push("AI Engineering (Agents, RAG, Azure OpenAI)", "Enterprise Data Engineering (ADF, SQL Server)");
-    const score = Math.min(98, 84 + matched.length * 2);
+    for (const c of checks) if (c.rx.test(q)) matches.push({ req: c.req, evidence: c.evidence });
+
+    if (/\baws\b|sagemaker|bedrock|glue|redshift/i.test(q)) gaps.push("AWS requested — Jerry's production cloud is Azure (concepts & architecture directly transferable).");
+    if (/\bgcp\b|bigquery|vertex/i.test(q)) gaps.push("GCP requested — Jerry's primary cloud stack is Microsoft Azure.");
+    if (/kubernetes|k8s|terraform/i.test(q)) gaps.push("Kubernetes/Terraform requested — Jerry works with Docker & Azure Container Apps.");
+    if (/\b(5|6|7|8|10)\+?\s*(years|anni|jahre|ans|años)/i.test(q)) gaps.push("Seniority threshold (5+ yrs) — Jerry has ~3 yrs intensive production AI & Banking Data experience.");
+
+    let score = 0;
+    let verdict = "Low Fit";
+    let summary = "This role appears outside Jerry's core focus in AI Engineering (Agentic AI, RAG, Azure OpenAI) and Enterprise Data Engineering (Azure Data Factory, SQL Server).";
+    if (matches.length >= 4) {
+      score = Math.min(95, 76 + matches.length * 4 - gaps.length * 4);
+      verdict = score >= 80 ? "Strong Fit" : "Good Transferable Fit";
+      summary = "Strong alignment with Jerry's dual AI Engineering (Deda AI) and Enterprise Data Engineering (Dedagroup / Mediobanca) background.";
+    } else if (matches.length >= 2) {
+      score = Math.max(45, Math.min(79, 50 + matches.length * 9 - gaps.length * 5));
+      verdict = "Good Transferable Fit";
+      summary = "Solid core overlap on AI/Data fundamentals, with a few stack or seniority differences noted below.";
+    } else if (matches.length === 1) {
+      score = 35;
+      verdict = "Partial Fit";
+      summary = "Limited direct overlap — only one core technical area matches Jerry's AI & Data Engineering profile.";
+    } else {
+      score = 15;
+      gaps.push("No direct match detected with AI Engineering, RAG, Python, Azure, ETL, or SQL.");
+    }
+
+    return {
+      score,
+      verdict,
+      role_detected: matches.length >= 2 ? "AI / Data Engineering Role" : "Role Outside Core Stack",
+      summary,
+      matches: matches.slice(0, 4),
+      gaps: gaps.slice(0, 3),
+      talking_points: matches.length >= 1
+        ? ["Multi-tenant RAG isolation on Azure AI Search + APIM + Managed Identity", "Scaling banking ETL on Azure Data Factory (-30% time) & 700+ page Agentic PDF systems"]
+        : [],
+    };
+  }
+
+  function renderJdReportCard(report, traceText) {
+    const lbl = JD_REPORT_LABELS[currentLang] || JD_REPORT_LABELS.en;
     const cvInfo = CV_FILES[currentLang] || CV_FILES.en;
-    return `
-      <p><strong>🎯 Match Score &amp; Verdict: ${score}% Strong Fit</strong> — Jerry combines production <strong>Agentic AI / RAG</strong> engineering at <strong>Deda AI</strong> with 2+ years of enterprise <strong>Cloud ETL &amp; SQL</strong> impact at <strong>Dedagroup</strong>.</p>
-      <ul>
-        ${matched.slice(0, 4).map((m) => `<li>✅ <strong>Matched Competency:</strong> ${m}</li>`).join("")}
-        <li>📊 <strong>Verified Impact:</strong> <strong>-30%</strong> ETL processing time (Mediobanca), <strong>+25%</strong> pipeline efficiency, <strong>700+ page</strong> Agentic PDF mapper, and multi-tenant Azure RAG.</li>
-      </ul>
-      <p style="margin-top:6px">📄 <a href="${cvInfo.file}" download="${cvInfo.name}">Download Jerry's CV (${cvInfo.badge})</a> · 📩 <a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a></p>
-    `;
+    const score = Math.max(0, Math.min(100, Number(report.score) || 0));
+    const tier = score >= 80 ? "high" : score >= 55 ? "mid" : "low";
+
+    const matchesHtml = (report.matches || []).length
+      ? `<div><div class="jd-sec-title">${escapeHTML(lbl.matches)}</div><ul class="jd-list">${report.matches
+          .map((m) => `<li class="jd-match-item"><strong>${escapeHTML(m.req || m.requirement || "")}</strong>${escapeHTML(m.evidence || "")}</li>`)
+          .join("")}</ul></div>`
+      : "";
+
+    const gapsHtml = (report.gaps || []).length
+      ? `<div><div class="jd-sec-title warn">${escapeHTML(lbl.gaps)}</div><ul class="jd-list">${report.gaps
+          .map((g) => `<li class="jd-gap-item">${escapeHTML(g)}</li>`)
+          .join("")}</ul></div>`
+      : "";
+
+    const talkHtml = (report.talking_points || []).length
+      ? `<div><div class="jd-sec-title violet">${escapeHTML(lbl.talking)}</div><ul class="jd-list">${report.talking_points
+          .map((tp) => `<li class="jd-talk-item">▸ ${escapeHTML(tp)}</li>`)
+          .join("")}</ul></div>`
+      : "";
+
+    const wrap = document.createElement("div");
+    wrap.className = "chat-msg bot booking-msg";
+    wrap.innerHTML = `
+      <span class="chat-trace">⚡ ${escapeHTML(traceText)}</span>
+      <div class="jd-report">
+        <div class="jd-report-top">
+          <div>
+            <div class="jd-role">${escapeHTML(report.role_detected || "JD Fit Report")}</div>
+            <span class="jd-verdict-sub mono">${escapeHTML(report.verdict || "")}</span>
+          </div>
+          <span class="jd-score-pill ${tier}">${score}%</span>
+        </div>
+        <div class="jd-meter"><i class="${tier}" style="width:${score}%"></i></div>
+        <p class="jd-summary">${escapeHTML(report.summary || "")}</p>
+        ${matchesHtml}
+        ${gapsHtml}
+        ${talkHtml}
+        <div class="jd-actions">
+          <a class="jd-act-btn" href="${cvInfo.file}" download="${cvInfo.name}">${escapeHTML(lbl.cv)} (${cvInfo.badge})</a>
+          <button type="button" class="jd-act-btn book" data-open-book="1">${escapeHTML(lbl.book)}</button>
+        </div>
+      </div>`;
+    chatMessages.appendChild(wrap);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const bookBtn = $("[data-open-book]", wrap);
+    if (bookBtn) {
+      bookBtn.addEventListener("click", () => {
+        addUserMessage(bookBtn.textContent);
+        showBookingCard();
+      });
+    }
   }
 
   async function runJdMatch(jdText, cardWrap) {
@@ -1159,23 +1252,27 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
       });
       if (resp.ok) {
         const data = await resp.json();
+        if (data && data.jdReport) {
+          typing.remove();
+          renderJdReportCard(
+            data.jdReport,
+            data.trace || "gemini.tool_call('evaluate_jd_fit', structured=true)"
+          );
+          busy = false;
+          return;
+        }
         if (data && data.reply) {
           typing.remove();
-          const cvInfo = CV_FILES[currentLang] || CV_FILES.en;
-          const extraFooter = `<p style="margin-top:8px">📄 <a href="${cvInfo.file}" download="${cvInfo.name}"><strong>Download CV (${cvInfo.badge})</strong></a> · 📩 <a href="mailto:elgendyjerry@gmail.com">elgendyjerry@gmail.com</a></p>`;
-          addBotMessage(
-            formatMarkdownToHTML(data.reply) + extraFooter,
-            data.trace || "gemini.tool_call('evaluate_jd_fit', candidate='Jerry_El_Gendy')"
-          );
+          addBotMessage(formatMarkdownToHTML(data.reply), data.trace || "gemini.tool_call('evaluate_jd_fit')");
           busy = false;
           return;
         }
       }
     } catch {}
 
-    await sleep(prefersReduced ? 80 : 420);
+    await sleep(prefersReduced ? 80 : 380);
     typing.remove();
-    addBotMessage(evaluateLocalJdFit(clean), "agent.tool_call('evaluate_jd_fit', mode='local_rag')");
+    renderJdReportCard(evaluateLocalJdFit(clean), "agent.tool_call('evaluate_jd_fit', mode='local_calibrated')");
     busy = false;
   }
 

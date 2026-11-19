@@ -301,12 +301,32 @@ export default async function handler(req) {
     }
 
     const userPrompt = isJdMode
-      ? `[TASK: JOB DESCRIPTION FIT EVALUATION — Respond in language: ${safeLang}]
-Evaluate how **Jerry Anderson El Gendy** matches the Job Description / Role Requirements below.
-Structure your response concisely (max 160 words) as:
-- **🎯 Match Score & Verdict:** (e.g., **94% Strong Fit** + 1-sentence summary)
-- **✅ Direct Experience Mapping:** (3–4 bullet points mapping the JD requirements directly to Jerry's verified experience at **Deda AI**, **Dedagroup / Mediobanca (-30% ETL time, +25% efficiency, -20% SQL query time)**, **700+ page Agentic PDF system (LangChain/CrewAI/Qdrant/Pydantic)**, **Multi-tenant Azure RAG (AI Search/Container Apps/APIM)**, or **CAI Document Intelligence**)
-- **🚀 Why Interview Jerry:** (1 bullet on his rare dual AI + Data Engineering profile & contact info: elgendyjerry@gmail.com)
+      ? `[TASK: HONEST, CALIBRATED JOB DESCRIPTION FIT EVALUATION — Output strictly valid JSON in language: ${safeLang}]
+Analyze how **Jerry Anderson El Gendy** matches the Job Description below.
+Be STRICT, HONEST, and REALISTIC like a senior technical recruiter — DO NOT inflate scores!
+Scoring rubric:
+- 85–96: Direct match with Jerry's core stack (AI Agents, RAG, Azure OpenAI/AI Search, Python/FastAPI, Azure Data Factory, SQL Server, Banking/Enterprise automation).
+- 60–84: Partial or transferable match (e.g. asks for AWS/GCP instead of Azure, Spark/Snowflake instead of ADF/SQL, or asks for 5+ yrs seniority when Jerry has ~3 yrs production experience). Explicitly note transferable skills AND honest gaps.
+- 30–59: Adjacent tech role (e.g. generic Frontend, Mobile, pure DevOps/SRE, Embedded C++) with limited overlap.
+- 0–29: Unrelated non-tech or completely different domain (e.g. Sales, Marketing, Graphic Design, Chef, etc.).
+
+Return ONLY a JSON object with this exact schema (all text values written in language "${safeLang}"):
+{
+  "score": <integer 0-100>,
+  "verdict": "<short label: e.g. Strong Fit / Good Transferable Fit / Partial Fit / Low Fit>",
+  "role_detected": "<short role title extracted from JD, max 45 chars>",
+  "summary": "<1-2 concise sentences summarizing overall fit honestly>",
+  "matches": [
+    { "req": "<JD requirement>", "evidence": "<Jerry's concrete verified project/metric>" }
+  ],
+  "gaps": [
+    "<honest gap, missing tool, or transferable note — max 15 words each; empty array only if near-perfect match>"
+  ],
+  "talking_points": [
+    "<specific technical topic worth discussing in an interview with Jerry>"
+  ]
+}
+Limits: max 4 items in "matches", max 3 items in "gaps", max 2 items in "talking_points". Never invent experience not in Jerry's profile.
 
 Job Description to evaluate:
 """
@@ -328,8 +348,19 @@ User question: ${cleanMsg}`;
     for (const model of models) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 3500);
+      const timer = setTimeout(() => controller.abort(), isJdMode ? 8000 : 3500);
       try {
+        const genConfig = isJdMode
+          ? {
+              temperature: 0.2,
+              maxOutputTokens: 850,
+              responseMimeType: "application/json",
+            }
+          : {
+              temperature: 0.3,
+              maxOutputTokens: 550,
+            };
+
         const response = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -337,10 +368,7 @@ User question: ${cleanMsg}`;
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
             contents,
-            generationConfig: {
-              temperature: 0.3,
-              maxOutputTokens: 550,
-            },
+            generationConfig: genConfig,
           }),
         });
         clearTimeout(timer);
@@ -369,12 +397,39 @@ User question: ${cleanMsg}`;
       });
     }
 
+    if (isJdMode) {
+      let jdReport = null;
+      try {
+        const cleanedJson = replyText.replace(/^```json\s*/i, "").replace(/```$/i, "").trim();
+        const parsed = JSON.parse(cleanedJson);
+        if (typeof parsed.score === "number" && parsed.summary) {
+          jdReport = {
+            score: Math.max(0, Math.min(100, Math.round(parsed.score))),
+            verdict: String(parsed.verdict || ""),
+            role_detected: String(parsed.role_detected || ""),
+            summary: String(parsed.summary || ""),
+            matches: Array.isArray(parsed.matches) ? parsed.matches.slice(0, 4) : [],
+            gaps: Array.isArray(parsed.gaps) ? parsed.gaps.slice(0, 3) : [],
+            talking_points: Array.isArray(parsed.talking_points) ? parsed.talking_points.slice(0, 2) : [],
+          };
+        }
+      } catch {}
+
+      return new Response(
+        JSON.stringify({
+          reply: jdReport ? jdReport.summary : replyText,
+          jdReport,
+          trace: `gemini.tool_call('evaluate_jd_fit', model='${usedModel}', structured=true)`,
+          model: usedModel,
+        }),
+        { status: 200, headers: securityHeaders }
+      );
+    }
+
     return new Response(
       JSON.stringify({
         reply: replyText,
-        trace: isJdMode
-          ? "gemini.tool_call('evaluate_jd_fit', candidate='Jerry_El_Gendy')"
-          : detectToolTrace(cleanMsg),
+        trace: detectToolTrace(cleanMsg),
         model: usedModel,
       }),
       { status: 200, headers: securityHeaders }
