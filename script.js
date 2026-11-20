@@ -989,10 +989,10 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
     }
   ];
 
-  function addBotMessage(html, traceText = "gemini-2.5-flash · rag") {
+  function addBotMessage(html) {
     const wrap = document.createElement("div");
     wrap.className = "chat-msg bot";
-    wrap.innerHTML = `<span class="chat-trace">⚡ ${escapeHTML(traceText)}</span><div class="chat-bubble">${html}</div>`;
+    wrap.innerHTML = `<div class="chat-bubble">${html}</div>`;
     chatMessages.appendChild(wrap);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
@@ -1196,7 +1196,6 @@ Type <span class="c-cyan">help</span> to list commands, or click a suggestion be
     const wrap = document.createElement("div");
     wrap.className = "chat-msg bot booking-msg";
     wrap.innerHTML = `
-      <span class="chat-trace">⚡ ${escapeHTML(traceText)}</span>
       <div class="jd-report">
         <div class="jd-report-top">
           <div>
